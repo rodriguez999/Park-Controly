@@ -1,0 +1,337 @@
+<!doctype html>
+
+<html class="h-full bg-gray-50" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ParkControl - Sistema de Gestión de Parqueos</title>
+    <!-- Tailwind CSS CDN with plugins -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            animation: {
+              "slide-in-left": "slideInLeft 0.6s ease-out forwards",
+              "slide-in-right": "slideInRight 0.6s ease-out forwards",
+            },
+            keyframes: {
+              slideInLeft: {
+                "0%": { transform: "translateX(-100%)", opacity: "0" },
+                "100%": { transform: "translateX(0)", opacity: "1" },
+              },
+              slideInRight: {
+                "0%": { transform: "translateX(100%)", opacity: "0" },
+                "100%": { transform: "translateX(0)", opacity: "1" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style data-purpose="custom-layout">
+      /* Custom background sizing for the left panel */
+      .bg-hero-image {
+        background-image:
+          linear-gradient(rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.8)),
+          url("images/left-hero.jpg");
+        background-size: cover;
+        background-position: center;
+      }
+
+      /* Ensure full height for the main container */
+      .min-h-screen-custom {
+        min-height: 100vh;
+      }
+    </style>
+  </head>
+  <body class="h-full font-sans antialiased">
+    <!-- BEGIN: MainContainer -->
+    <main class="flex min-h-screen-custom flex-col md:flex-row">
+      <!-- BEGIN: LeftHeroSection -->
+      <section
+        class="hidden md:flex md:w-1/2 bg-hero-image text-white p-12 flex-col justify-center relative overflow-hidden"
+        data-purpose="hero-content"
+      >
+        <div class="max-w-md mx-auto space-y-8 relative z-10">
+          <!-- Brand Identity -->
+          <div>
+            <h1 class="text-5xl font-bold mb-2">ParkControl</h1>
+            <h2 class="text-3xl font-semibold mb-4">
+              Sistema de Gestión de Parqueos
+            </h2>
+            <p class="text-blue-100 text-lg">
+              Administra tus estacionamientos de forma fácil y eficiente.
+            </p>
+          </div>
+
+          <!-- Features List -->
+          <div class="space-y-6 pt-8">
+            <!-- Feature 1 -->
+            <div class="flex items-start gap-4">
+              <div class="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+                <svg
+                  class="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewbox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-lg">Reserva en tiempo real</h3>
+                <p class="text-blue-100 text-sm">
+                  Encuentra y reserva espacios de estacionamiento al instante.
+                </p>
+              </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="flex items-start gap-4">
+              <div class="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+                <svg
+                  class="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewbox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-lg">Pagos seguros</h3>
+                <p class="text-blue-100 text-sm">
+                  Procesa tus pagos de manera segura y confiable.
+                </p>
+              </div>
+            </div>
+            <!-- Feature 3 -->
+            <div class="flex items-start gap-4">
+              <div class="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+                <svg
+                  class="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewbox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-lg">Historial completo</h3>
+                <p class="text-blue-100 text-sm">
+                  Accede a tu historial de parqueo cuando lo necesites.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- END: LeftHeroSection -->
+      <!-- BEGIN: RightLoginSection -->
+      <section
+        class="flex-1 flex items-center justify-center p-6 bg-gray-50"
+        data-purpose="login-form-container"
+      >
+        <div class="w-full max-w-md">
+          <!-- Login Card -->
+          <div
+            class="bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-gray-100"
+          >
+            <!-- Icon and Header -->
+            <div class="text-center mb-8">
+              <div
+                class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full text-white mb-4"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="h-8 w-8"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 
+           3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 
+           7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 
+           12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                  />
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">Iniciar Sesión</h2>
+              <p class="text-gray-500 mt-2 text-sm">
+                Ingresa tus credenciales para acceder al sistema de parqueos
+              </p>
+            </div>
+            <!-- Form Start -->
+            <form action="#" class="space-y-6" method="POST">
+              <!-- Email Field -->
+              <div>
+                <label
+                  class="block text-sm font-medium text-gray-700"
+                  for="email"
+                  >Correo Electrónico</label
+                >
+                <div class="mt-1 relative">
+                  <div
+                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                  >
+                    <svg
+                      class="h-5 w-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewbox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      ></path>
+                    </svg>
+                  </div>
+                  <input
+                    autocomplete="email"
+                    class="block w-full pl-10 pr-3 py-3 border-none bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm"
+                    id="email"
+                    name="email"
+                    placeholder="tu@email.com"
+                    required=""
+                    type="email"
+                  />
+                </div>
+              </div>
+              <!-- Password Field -->
+              <div>
+                <label
+                  class="block text-sm font-medium text-gray-700"
+                  for="password"
+                  >Contraseña</label
+                >
+                <div class="mt-1 relative">
+                  <div
+                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                  >
+                    <svg
+                      class="h-5 w-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewbox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      ></path>
+                    </svg>
+                  </div>
+                  <input
+                    autocomplete="current-password"
+                    class="block w-full pl-10 pr-3 py-3 border-none bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm"
+                    id="password"
+                    name="password"
+                    placeholder="••••••••"
+                    required=""
+                    type="password"
+                  />
+                </div>
+              </div>
+              <!-- Remember Me & Forgot Password -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <input
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                  />
+                  <label
+                    class="ml-2 block text-sm text-gray-700"
+                    for="remember-me"
+                    >Recordarme</label
+                  >
+                </div>
+                <div class="text-sm">
+                  <a
+                    class="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+                    href="#"
+                    >¿Olvidaste tu contraseña?</a
+                  >
+                </div>
+              </div>
+              <!-- Submit Button -->
+              <div>
+                <button
+                  class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all uppercase tracking-wider"
+                  type="submit"
+                >
+                  Iniciar Sesión
+                </button>
+              </div>
+            </form>
+            <!-- Register Link -->
+            <div class="mt-8 text-center">
+              <p class="text-sm text-gray-600">
+                ¿No tienes una cuenta?
+                <a
+                  class="font-semibold text-blue-600 hover:text-blue-500 transition-colors"
+                  href="register.html"
+                  >Regístrate aquí</a
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- END: RightLoginSection -->
+    </main>
+    <!-- END: MainContainer -->
+    <!-- Script para animación -->
+    <script data-purpose="event-handlers">
+      /**
+       * Lógica para navegar hacia registro con animación inversa
+       */
+      function handleRegisterTransition() {
+        const container = document.querySelector(
+          '[data-purpose="login-form-container"] > div',
+        );
+
+        // Animación de salida hacia la izquierda
+        container.style.transform = "translateX(0)";
+        container.style.transition = "all 0.4s ease-in";
+        container.style.transform = "translateX(-100%)";
+        container.style.opacity = "0";
+
+        // Espera a que termine la animación y redirige
+        setTimeout(() => {
+          window.location.href = "register.html";
+        }, 400);
+      }
+    </script>
+  </body>
+</html>

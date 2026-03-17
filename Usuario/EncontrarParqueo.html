@@ -1,0 +1,398 @@
+<!doctype html>
+
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ParkControl - Encontrar Parqueo</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="icon" type="image/x-icon" href="../images/pc.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-dim': '#f1f3f9',
+              'on-tertiary': '#ffffff',
+              tertiary: '#006d4a',
+              'on-secondary-fixed': '#111c2d',
+              'on-error-container': '#410002',
+              'tertiary-container': '#6ffbbe',
+              'secondary-fixed': '#d8e3fb',
+              'on-tertiary-fixed-variant': '#005236',
+              'on-primary-fixed-variant': '#003baf',
+              'tertiary-fixed-dim': '#4edea3',
+              'surface-bright': '#f9faff',
+              'primary-fixed': '#dce1ff',
+              background: '#f9faff',
+              'surface-container-high': '#e1e2ec',
+              'on-secondary-fixed-variant': '#3c475a',
+              error: '#ba1a1a',
+              'on-primary': '#ffffff',
+              'on-tertiary-fixed': '#002113',
+              'inverse-primary': '#b6c4ff',
+              'on-secondary-container': '#111c2d',
+              'surface-variant': '#e1e2ec',
+              'surface-container-low': '#f3f3fa',
+              'secondary-container': '#d8e3fb',
+              'on-secondary': '#263143',
+              'secondary-fixed-dim': '#bcc7de',
+              'tertiary-fixed': '#6ffbbe',
+              'on-surface': '#191c20',
+              primary: '#2454d1',
+              'on-primary-container': '#00164f',
+              'outline-variant': '#c4c5d6',
+              surface: '#f9faff',
+              'primary-container': '#dbe0ff',
+              'on-tertiary-container': '#002113',
+              'surface-tint': '#2454d1',
+              'inverse-on-surface': '#f0f0f7',
+              'primary-fixed-dim': '#b6c4ff',
+              'on-surface-variant': '#44474e',
+              'surface-container-lowest': '#ffffff',
+              outline: '#74777f',
+              'surface-container-highest': '#e1e2ec',
+              'on-error': '#ffffff',
+              'inverse-surface': '#2e3036',
+              'on-background': '#191c20',
+              'surface-container': '#ededf4',
+              secondary: '#565e71',
+              'on-primary-fixed': '#00164f',
+              'error-container': '#ffdad6',
+            },
+            fontFamily: {
+              headline: ['Manrope'],
+              body: ['Inter'],
+              label: ['Inter'],
+            },
+            borderRadius: { DEFAULT: '0.25rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' },
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        vertical-align: middle;
+      }
+      body {
+        background-color: #f9faff;
+        color: #191c20;
+        font-family: 'Inter', sans-serif;
+      }
+      /* Custom sidebar transition and rail logic */
+      .sidebar-rail {
+        width: 80px;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+      }
+      .sidebar-rail:hover {
+        width: 280px;
+      }
+      .nav-label {
+        opacity: 0;
+        white-space: nowrap;
+        transition: opacity 0.2s ease-in-out;
+        pointer-events: none;
+      }
+      .sidebar-rail:hover .nav-label {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .sidebar-rail:hover .sidebar-branding {
+        align-items: flex-start;
+        padding-left: 24px;
+      }
+      .sidebar-branding {
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <!-- TopNavBar -->
+    <nav class="bg-surface/80 border-outline-variant/30 sticky top-0 z-50 flex h-20 items-center justify-between border-b px-8 backdrop-blur-xl">
+      <div class="flex items-center gap-12">
+        <a class="font-headline text-primary text-2xl font-extrabold tracking-tight" href="Index.html">ParkControl</a>
+        <div class="hidden items-center gap-8 md:flex">
+          <a class="text-primary font-bold" href="Index.html">Inicio</a>
+          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Reservaciones.html">Mis reservaciones</a>
+          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Vehiculos.html">Mis vehículos</a>
+          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Tarifas.html">Tarifas</a>
+          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Historial.html">Historial</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-6">
+        <div class="group relative">
+          <span class="material-symbols-outlined text-outline absolute top-1/2 left-4 -translate-y-1/2">search</span>
+          <input
+            class="bg-surface-container-highest/50 text-on-surface border-outline-variant/30 focus:ring-primary focus:bg-surface-container-highest placeholder:text-outline w-64 rounded-xl border py-2 pr-6 pl-12 text-sm transition-all focus:ring-2"
+            placeholder="Buscar parqueos..."
+            type="text"
+          />
+        </div>
+        <div class="border-outline-variant/30 flex items-center gap-4 border-l pl-6">
+          <button class="text-on-surface-variant hover:bg-surface-container rounded-lg p-2 transition-all">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="text-on-surface-variant hover:bg-surface-container rounded-lg p-2 transition-all">
+            <span class="material-symbols-outlined">help</span>
+          </button>
+        </div>
+        <img
+          alt="User Profile Avatar"
+          class="border-outline-variant/30 h-10 w-10 rounded-full border"
+          data-alt="Professional corporate headshot of a user"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-1fzsWWPrkN1PiSLAn38cRBLTgrLspQO7SZaL872B2Rb-qBVvREG_eGGbYM5jEcKuiyVq67oam337dcXpsNtwzwU8C02sX_tAzKk2wDbib_DYp2CWbEyuTz57JhbmbdxyA-4B-TTwuvbjiluqwXdGQAMWWr3OOxJEtbSvZNkVKUynp3qNq8SVK6VSsbctmrTEYTI7pJFDp-_Fyun2O_Nm-ZlTkA_MSkRUb_e-vwzRe2qv06kFopxH3LxbQZP8k0MSONNA1HM-8Q"
+        />
+      </div>
+    </nav>
+    <div class="flex flex-1 overflow-hidden">
+      <!-- SideNavBar Refined (Rail) -->
+      <aside class="sidebar-rail bg-surface-container-low border-outline-variant/30 hidden flex-col gap-10 border-r py-8 lg:flex">
+        <div class="sidebar-branding px-2">
+          <div class="bg-primary mb-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+            <span class="material-symbols-outlined text-on-primary text-2xl">local_parking</span>
+          </div>
+          <div class="nav-label flex flex-col gap-0.5">
+            <span class="font-headline text-on-surface text-lg font-bold">ParkControl</span>
+            <span class="font-label text-on-surface-variant text-[10px] tracking-[0.2em] uppercase">Portal de clientes</span>
+          </div>
+        </div>
+        <nav class="flex flex-col gap-3 px-4">
+          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Index.html">
+            <span class="material-symbols-outlined shrink-0">directions_car</span>
+            <span class="nav-label text-sm font-medium">Inicio</span>
+          </a>
+          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Reservas.html">
+            <span class="material-symbols-outlined shrink-0">calendar_today</span>
+            <span class="nav-label text-sm font-medium">Mis reservaciones</span>
+          </a>
+          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Vehiculos.html">
+            <span class="material-symbols-outlined shrink-0">minor_crash</span>
+            <span class="nav-label text-sm font-medium">Mis vehículos</span>
+          </a>
+          <a class="bg-primary text-on-primary shadow-primary/20 flex items-center gap-6 rounded-xl px-3 py-3 shadow-lg" href="Index.html">
+            <span class="material-symbols-outlined shrink-0">map</span>
+            <span class="nav-label text-sm font-medium">Encontrar parqueo</span>
+          </a>
+          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Tarifas.html">
+            <span class="material-symbols-outlined shrink-0">payments</span>
+            <span class="nav-label text-sm font-medium">Tarifas</span>
+          </a>
+          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Historial.html">
+            <span class="material-symbols-outlined shrink-0">history</span>
+            <span class="nav-label text-sm font-medium">Historial</span>
+          </a>
+        </nav>
+        <div class="mt-auto flex flex-col gap-3 px-4">
+          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="#">
+            <span class="material-symbols-outlined shrink-0">settings</span>
+            <span class="nav-label text-sm font-medium">Settings</span>
+          </a>
+          <a class="text-error hover:bg-error-container/20 flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="#">
+            <span class="material-symbols-outlined shrink-0">logout</span>
+            <span class="nav-label text-sm font-medium">Logout</span>
+          </a>
+        </div>
+      </aside>
+      <!-- Main Content -->
+      <main class="flex-1 overflow-x-hidden px-2 transition-all duration-300">
+        <!-- Dynamic Content Area -->
+        <div class="flex flex-1 pt-16">
+          <!-- Map View (Simulated) -->
+          <section class="bg-surface relative flex-1 overflow-hidden">
+            <div
+              class="absolute inset-0 opacity-100"
+              data-alt="Stylized light city map view"
+              data-location="Dominicana, Santo Domingo"
+              style="
+                background-image: url('../images/mapa.jpeg');
+                background-size: cover;
+                background-position: center;
+                filter: grayscale(100%) brightness(1.1) contrast(0.9);
+              "
+            ></div>
+            <!-- Map UI Overlays -->
+            <div class="pointer-events-none absolute inset-0">
+              <!-- Fake Map Pins -->
+              <div class="pointer-events-auto absolute top-[30%] left-[40%]">
+                <div class="group relative">
+                  <div class="bg-primary flex h-10 w-10 cursor-pointer items-center justify-center rounded-full shadow-xl transition-transform hover:scale-110">
+                    <span class="material-symbols-outlined text-lg text-white">local_parking</span>
+                  </div>
+                  <div
+                    class="border-outline-variant/10 pointer-events-none absolute bottom-full left-1/2 mb-2 w-48 -translate-x-1/2 rounded-xl border bg-white p-3 opacity-0 shadow-2xl transition-opacity group-hover:opacity-100"
+                  >
+                    <p class="font-headline text-primary text-sm font-bold">Blue Tower Parking</p>
+                    <p class="text-tertiary mt-1 text-[11px] font-semibold">Available: 12 spots</p>
+                  </div>
+                </div>
+              </div>
+              <div class="pointer-events-auto absolute top-[60%] left-[25%]">
+                <div class="border-primary flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 bg-white shadow-lg transition-transform hover:scale-110">
+                  <span class="material-symbols-outlined text-primary text-sm">local_parking</span>
+                </div>
+              </div>
+              <div class="pointer-events-auto absolute top-[45%] left-[70%]">
+                <div class="border-primary flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 bg-white shadow-lg transition-transform hover:scale-110">
+                  <span class="material-symbols-outlined text-primary text-sm">local_parking</span>
+                </div>
+              </div>
+            </div>
+            <!-- Floating Controls -->
+            <div class="absolute bottom-6 left-6 flex flex-col gap-2">
+              <button
+                class="text-on-surface border-outline-variant/10 hover:bg-surface-container-high flex h-10 w-10 items-center justify-center rounded-lg border bg-white shadow-lg transition-colors"
+              >
+                <span class="material-symbols-outlined">add</span>
+              </button>
+              <button
+                class="text-on-surface border-outline-variant/10 hover:bg-surface-container-high flex h-10 w-10 items-center justify-center rounded-lg border bg-white shadow-lg transition-colors"
+              >
+                <span class="material-symbols-outlined">remove</span>
+              </button>
+              <button
+                class="text-on-surface border-outline-variant/10 hover:bg-surface-container-high mt-2 flex h-10 w-10 items-center justify-center rounded-lg border bg-white shadow-lg transition-colors"
+              >
+                <span class="material-symbols-outlined">my_location</span>
+              </button>
+            </div>
+          </section>
+          <!-- Sidebar Results -->
+          <section class="bg-surface-container-low border-outline-variant/10 z-10 flex w-[400px] flex-col border-l">
+            <div class="p-6">
+              <div class="mb-6 flex items-center justify-between">
+                <h2 class="font-headline text-on-surface text-xl font-bold">Nearby Facilities</h2>
+                <button class="text-primary flex items-center gap-1 text-xs font-semibold tracking-wider uppercase hover:underline">
+                  Filters
+                  <span class="material-symbols-outlined text-sm">tune</span>
+                </button>
+              </div>
+              <div class="max-h-[calc(100vh-14rem)] space-y-4 overflow-y-auto pr-2">
+                <!-- Facility Card 1 -->
+                <div class="group border-primary border-outline-variant/10 cursor-pointer rounded-xl border border-l-4 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                  <div class="mb-2 flex items-start justify-between">
+                    <h3 class="text-on-surface group-hover:text-primary font-bold transition-colors">Blue Tower Parking</h3>
+                    <span class="bg-tertiary-container text-on-tertiary-container rounded-full px-2 py-0.5 text-[10px] font-bold tracking-tighter uppercase">Open</span>
+                  </div>
+                  <p class="text-on-surface-variant mb-4 flex items-center gap-1 text-xs">
+                    <span class="material-symbols-outlined text-sm">location_on</span>
+                    452 Broadway, New York, NY 10013
+                  </p>
+                  <div class="flex items-end justify-between">
+                    <div class="space-y-1">
+                      <div class="flex items-center gap-2">
+                        <div class="bg-surface-container-highest h-1.5 w-32 overflow-hidden rounded-full">
+                          <div class="bg-tertiary h-full w-[88%]"></div>
+                        </div>
+                        <span class="text-tertiary text-[10px] font-bold">88% full</span>
+                      </div>
+                      <p class="text-on-surface-variant text-[11px] font-medium">12 spots left</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="font-headline text-on-surface text-lg font-extrabold">$14<span class="text-on-surface-variant text-[10px] font-medium tracking-normal">/hr</span></p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Facility Card 2 -->
+                <div class="group border-outline-variant/10 cursor-pointer rounded-xl border border-l-4 border-transparent bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                  <div class="mb-2 flex items-start justify-between">
+                    <h3 class="text-on-surface group-hover:text-primary font-bold transition-colors">Lexington Garage</h3>
+                    <span class="bg-tertiary-container text-on-tertiary-container rounded-full px-2 py-0.5 text-[10px] font-bold tracking-tighter uppercase">Open</span>
+                  </div>
+                  <p class="text-on-surface-variant mb-4 flex items-center gap-1 text-xs">
+                    <span class="material-symbols-outlined text-sm">location_on</span>
+                    201 E 25th St, New York, NY 10010
+                  </p>
+                  <div class="flex items-end justify-between">
+                    <div class="space-y-1">
+                      <div class="flex items-center gap-2">
+                        <div class="bg-surface-container-highest h-1.5 w-32 overflow-hidden rounded-full">
+                          <div class="bg-tertiary h-full w-[45%]"></div>
+                        </div>
+                        <span class="text-tertiary text-[10px] font-bold">45% full</span>
+                      </div>
+                      <p class="text-on-surface-variant text-[11px] font-medium">48 spots left</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="font-headline text-on-surface text-lg font-extrabold">$11<span class="text-on-surface-variant text-[10px] font-medium tracking-normal">/hr</span></p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Facility Card 3 (Critical State) -->
+                <div class="group border-outline-variant/10 cursor-pointer rounded-xl border border-l-4 border-transparent bg-white p-4 opacity-90 shadow-sm transition-all hover:shadow-md">
+                  <div class="mb-2 flex items-start justify-between">
+                    <h3 class="text-on-surface group-hover:text-primary font-bold transition-colors">Central Plaza Lot</h3>
+                    <span class="bg-error-container text-on-error-container rounded-full px-2 py-0.5 text-[10px] font-bold tracking-tighter uppercase">Almost Full</span>
+                  </div>
+                  <p class="text-on-surface-variant mb-4 flex items-center gap-1 text-xs">
+                    <span class="material-symbols-outlined text-sm">location_on</span>
+                    1221 Ave of the Americas, NY 10020
+                  </p>
+                  <div class="flex items-end justify-between">
+                    <div class="space-y-1">
+                      <div class="flex items-center gap-2">
+                        <div class="bg-surface-container-highest h-1.5 w-32 overflow-hidden rounded-full">
+                          <div class="bg-error h-full w-[98%]"></div>
+                        </div>
+                        <span class="text-error text-[10px] font-bold">98% full</span>
+                      </div>
+                      <p class="text-on-surface-variant text-[11px] font-medium">2 spots left</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="font-headline text-on-surface text-lg font-extrabold">$18<span class="text-on-surface-variant text-[10px] font-medium tracking-normal">/hr</span></p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Facility Card 4 -->
+                <div class="group border-outline-variant/10 cursor-pointer rounded-xl border border-l-4 border-transparent bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                  <div class="mb-2 flex items-start justify-between">
+                    <h3 class="text-on-surface group-hover:text-primary font-bold transition-colors">Riverside Underpass</h3>
+                    <span class="bg-tertiary-container text-on-tertiary-container rounded-full px-2 py-0.5 text-[10px] font-bold tracking-tighter uppercase">Open</span>
+                  </div>
+                  <p class="text-on-surface-variant mb-4 flex items-center gap-1 text-xs">
+                    <span class="material-symbols-outlined text-sm">location_on</span>
+                    12th Ave &amp; W 72nd St, NY 10023
+                  </p>
+                  <div class="flex items-end justify-between">
+                    <div class="space-y-1">
+                      <div class="flex items-center gap-2">
+                        <div class="bg-surface-container-highest h-1.5 w-32 overflow-hidden rounded-full">
+                          <div class="bg-tertiary h-full w-[30%]"></div>
+                        </div>
+                        <span class="text-tertiary text-[10px] font-bold">30% full</span>
+                      </div>
+                      <p class="text-on-surface-variant text-[11px] font-medium">65 spots left</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="font-headline text-on-surface text-lg font-extrabold">$9<span class="text-on-surface-variant text-[10px] font-medium tracking-normal">/hr</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-surface-container-high mt-auto p-6">
+              <button
+                class="bg-primary font-headline hover:bg-primary/90 shadow-primary/20 flex w-full items-center justify-center gap-2 rounded-xl py-3 font-bold text-white shadow-lg transition-colors duration-200 active:scale-95"
+              >
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">bolt</span>
+                Quick Reserve Nearby
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

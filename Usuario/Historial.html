@@ -1,0 +1,426 @@
+<!doctype html>
+
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ParkControl - Mi historial</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="icon" type="image/x-icon" href="../images/pc.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-dim': '#f1f3f9',
+              'on-tertiary': '#ffffff',
+              tertiary: '#006d4a',
+              'on-secondary-fixed': '#111c2d',
+              'on-error-container': '#410002',
+              'tertiary-container': '#6ffbbe',
+              'secondary-fixed': '#d8e3fb',
+              'on-tertiary-fixed-variant': '#005236',
+              'on-primary-fixed-variant': '#003baf',
+              'tertiary-fixed-dim': '#4edea3',
+              'surface-bright': '#fcf9ff',
+              'primary-fixed': '#0056d6',
+              background: '#f8f9fc',
+              'surface-container-high': '#ebeef5',
+              'on-secondary-fixed-variant': '#3c475a',
+              error: '#ba1a1a',
+              'on-primary': '#ffffff',
+              'on-tertiary-fixed': '#002113',
+              'inverse-primary': '#b6c4ff',
+              'on-secondary-container': '#111c2d',
+              'surface-variant': '#e1e2ec',
+              'surface-container-low': '#f3f4f9',
+              'secondary-container': '#d8e3fb',
+              'on-secondary': '#263143',
+              'secondary-fixed-dim': '#bcc7de',
+              'tertiary-fixed': '#6ffbbe',
+              'on-surface': '#191c20',
+              primary: '#2d5ad7',
+              'on-primary-container': '#00164f',
+              'outline-variant': '#c4c6d0',
+              surface: '#f8f9fc',
+              'primary-container': '#dbe0ff',
+              'on-tertiary-container': '#002113',
+              'surface-tint': '#2d5ad7',
+              'inverse-on-surface': '#f0f0f4',
+              'primary-fixed-dim': '#b6c4ff',
+              'on-surface-variant': '#44474e',
+              'surface-container-lowest': '#ffffff',
+              outline: '#74777f',
+              'surface-container-highest': '#e2e2e6',
+              'on-error': '#ffffff',
+              'inverse-surface': '#2e3034',
+              'on-background': '#191c20',
+              'surface-container': '#edeff4',
+              secondary: '#565e71',
+              'on-primary-fixed': '#00164f',
+              'error-container': '#ffdad6',
+            },
+            fontFamily: {
+              headline: ['Manrope'],
+              body: ['Inter'],
+              label: ['Inter'],
+            },
+            borderRadius: { DEFAULT: '0.25rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' },
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        vertical-align: middle;
+      }
+      .glass-effect {
+        backdrop-filter: blur(16px);
+        background: rgba(255, 255, 255, 0.8);
+      }
+      .kinetic-gradient {
+        background: linear-gradient(135deg, #2d5ad7 0%, #0056d6 100%);
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f8f9fc;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #c4c6d0;
+        border-radius: 10px;
+      }
+
+      /* Rail Transition Effects based on SCREEN_31 */
+      .sidebar-rail {
+        width: 80px;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+      }
+      .sidebar-rail:hover {
+        width: 280px;
+      }
+      .nav-label {
+        opacity: 0;
+        white-space: nowrap;
+        transition: opacity 0.2s ease-in-out;
+        pointer-events: none;
+      }
+      .sidebar-rail:hover .nav-label {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .sidebar-rail:hover .sidebar-branding {
+        align-items: flex-start;
+        padding-left: 24px;
+      }
+      .sidebar-branding {
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-surface font-body selection:bg-primary/20 flex min-h-screen flex-col">
+    <!-- TopNavBar -->
+    <nav class="bg-surface/80 border-outline-variant/30 sticky top-0 z-50 flex h-20 items-center justify-between border-b px-8 backdrop-blur-xl">
+      <div class="flex items-center gap-12">
+        <a href="Index.html" class="font-headline text-primary text-2xl font-extrabold tracking-tight">ParkControl</a>
+        <div class="hidden items-center gap-8 md:flex">
+          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Index.html">Inicio</a>
+          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Reservaciones.html">Mis reservaciones</a>
+          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Vehiculos.html">Mis vehículos</a>
+          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Tarifas.html">Tarifas</a>
+          <a class="text-primary font-bold" href="Historial.html">Historial</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-6">
+        <div class="group relative">
+          <span class="material-symbols-outlined text-outline absolute top-1/2 left-4 -translate-y-1/2">search</span>
+          <input
+            class="bg-surface-container-highest/50 text-on-surface border-outline-variant/30 focus:ring-primary focus:bg-surface-container-highest placeholder:text-outline w-64 rounded-xl border py-2 pr-6 pl-12 text-sm transition-all focus:ring-2"
+            placeholder="Buscar reservaciones…"
+            type="text"
+          />
+        </div>
+        <div class="flex items-center gap-4">
+          <button class="text-on-surface-variant hover:bg-surface-container relative rounded-lg p-2 transition-all">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="text-on-surface-variant hover:bg-surface-container rounded-lg p-2 transition-all">
+            <span class="material-symbols-outlined">help</span>
+          </button>
+        </div>
+        <img
+          alt="User Profile Avatar"
+          class="border-outline-variant/30 h-10 w-10 rounded-full border object-cover"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-1fzsWWPrkN1PiSLAn38cRBLTgrLspQO7SZaL872B2Rb-qBVvREG_eGGbYM5jEcKuiyVq67oam337dcXpsNtwzwU8C02sX_tAzKk2wDbib_DYp2CWbEyuTz57JhbmbdxyA-4B-TTwuvbjiluqwXdGQAMWWr3OOxJEtbSvZNkVKUynp3qNq8SVK6VSsbctmrTEYTI7pJFDp-_Fyun2O_Nm-ZlTkA_MSkRUb_e-vwzRe2qv06kFopxH3LxbQZP8k0MSONNA1HM-8Q"
+        />
+      </div>
+    </nav>
+    <div class="flex flex-1 overflow-hidden">
+    <!-- SideNavBar -->
+    <aside class="sidebar-rail bg-surface-container-low border-outline-variant/30 hidden flex-col gap-10 border-r py-8 lg:flex">
+      <div class="sidebar-branding px-2">
+        <div class="bg-primary mb-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+          <span class="material-symbols-outlined text-on-primary text-2xl">local_parking</span>
+        </div>
+        <div class="nav-label flex flex-col gap-0.5">
+          <span class="font-headline text-on-surface text-lg font-bold">ParkControl</span>
+          <span class="font-label text-on-surface-variant text-[10px] tracking-[0.2em] uppercase">Portal de clientes</span>
+        </div>
+      </div>
+      <nav class="flex flex-col gap-3 px-4">
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Index.html">
+          <span class="material-symbols-outlined shrink-0">directions_car</span>
+          <span class="nav-label font-medium">Inicio</span>
+        </a>
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Tarifas.html">
+          <span class="material-symbols-outlined shrink-0">calendar_today</span>
+          <span class="nav-label font-medium">Mis reservaciones</span>
+        </a>
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Vehiculos.html">
+          <span class="material-symbols-outlined shrink-0">minor_crash</span>
+          <span class="nav-label font-medium">Mis vehículos</span>
+        </a>
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Tarifas.html">
+          <span class="material-symbols-outlined shrink-0">payments</span>
+          <span class="nav-label font-medium">Tarifas</span>
+        </a>
+        <a class="bg-primary text-on-primary shadow-primary/20 flex items-center gap-6 rounded-xl px-3 py-3 shadow-lg" href="Reservaciones.html">
+          <span class="material-symbols-outlined shrink-0">history</span>
+          <span class="nav-label font-medium">Historial</span>
+        </a>
+      </nav>
+      <div class="mt-auto flex flex-col gap-3 px-4">
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="#">
+          <span class="material-symbols-outlined shrink-0">settings</span>
+          <span class="nav-label font-medium">Configuración</span>
+        </a>
+        <a class="text-error hover:bg-error-container/20 flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="#">
+          <span class="material-symbols-outlined shrink-0">logout</span>
+          <span class="nav-label font-medium">Cerrar sesión</span>
+        </a>
+      </div>
+    </aside>
+    <!-- Main Canvas -->
+    <div class="flex min-w-0 flex-1 flex-col">
+      <!-- Page Content -->
+      <main class="flex-1 space-y-8 p-8">
+        <!-- Header Section -->
+        <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <h2 class="text-on-surface font-headline text-4xl font-extrabold tracking-tight">Historial de Reservas</h2>
+            <p class="text-on-surface-variant font-body mt-1">Consulta y gestiona tus registros de estacionamiento pasados.</p>
+          </div>
+          <!-- Summary Card: Bento Style -->
+          <div class="bg-surface-container-low flex items-center gap-6 rounded-xl border-none p-6">
+            <div class="bg-primary-container text-on-primary-container rounded-lg p-3">
+              <span class="material-symbols-outlined text-3xl">receipt_long</span>
+            </div>
+            <div>
+              <span class="font-label text-on-surface-variant block text-xs tracking-widest uppercase">Total de Reservas</span>
+              <span class="text-primary font-headline text-3xl font-black">48</span>
+            </div>
+          </div>
+        </div>
+        <!-- Filters Section -->
+        <section class="bg-surface-container-low flex flex-wrap items-center gap-4 rounded-xl p-6">
+          <div class="flex min-w-[200px] flex-col gap-1.5">
+            <label class="font-label text-on-surface-variant px-1 text-xs tracking-widest uppercase">Ubicación</label>
+            <select class="bg-surface-container-highest focus:ring-primary w-full cursor-pointer rounded-lg border-none px-4 py-2.5 text-sm focus:ring-2">
+              <option>Todas las ubicaciones</option>
+              <option>Downtown Center</option>
+              <option>Aeropuerto Internacional de las Américas</option>
+              <option>Plaza Central</option>
+            </select>
+          </div>
+          <div class="flex min-w-[200px] flex-col gap-1.5">
+            <label class="font-label text-on-surface-variant px-1 text-xs tracking-widest uppercase">Rango de Fecha</label>
+            <div class="bg-surface-container-highest flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2.5">
+              <span class="material-symbols-outlined text-on-surface-variant text-sm">calendar_month</span>
+              <span class="text-sm">Últimos 30 días</span>
+            </div>
+          </div>
+          <div class="flex min-w-[150px] flex-col gap-1.5">
+            <label class="font-label text-on-surface-variant px-1 text-xs tracking-widest uppercase">Estado</label>
+            <div class="flex items-center gap-2">
+              <button class="bg-primary text-on-primary rounded-lg px-4 py-2.5 text-xs font-semibold">Todo</button>
+              <button class="bg-surface-container-highest text-on-surface hover:bg-surface-container-high rounded-lg px-4 py-2.5 text-xs font-semibold">Completado</button>
+            </div>
+          </div>
+          <div class="mt-auto ml-auto pb-0.5">
+            <button class="text-primary hover:bg-primary-container/20 flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition-colors">
+              <span class="material-symbols-outlined">download</span>
+              Exportar CSV
+            </button>
+          </div>
+        </section>
+        <!-- Table Section -->
+        <section class="bg-surface overflow-hidden rounded-2xl border-none shadow-xl shadow-blue-900/10">
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-left">
+              <thead>
+                <tr class="bg-surface-container-low border-none">
+                  <th class="font-label text-on-surface-variant px-6 py-4 text-xs tracking-widest uppercase">Ubicación</th>
+                  <th class="font-label text-on-surface-variant px-6 py-4 text-xs tracking-widest uppercase">Fecha</th>
+                  <th class="font-label text-on-surface-variant px-6 py-4 text-xs tracking-widest uppercase">Horario</th>
+                  <th class="font-label text-on-surface-variant px-6 py-4 text-xs tracking-widest uppercase">Duración</th>
+                  <th class="font-label text-on-surface-variant px-6 py-4 text-right text-xs tracking-widest uppercase">Costo Total</th>
+                  <th class="font-label text-on-surface-variant px-6 py-4 text-xs tracking-widest uppercase">Estado</th>
+                  <th class="px-6 py-4"></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y-0">
+                <!-- Row 1 -->
+                <tr class="hover:bg-surface-container-low group transition-colors">
+                  <td class="px-6 py-5">
+                    <div class="flex items-center gap-3">
+                      <div class="bg-surface-container-high text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                        <span class="material-symbols-outlined">local_parking</span>
+                      </div>
+                      <div>
+                        <p class="text-on-surface font-body font-bold">Plaza Central</p>
+                        <p class="text-on-surface-variant text-xs">Plaza A-42</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-on-surface px-6 py-5 text-sm font-medium">12 Oct 2025</td>
+                  <td class="text-on-surface-variant px-6 py-5 text-sm">08:00 - 18:30</td>
+                  <td class="text-on-surface-variant px-6 py-5 text-sm">10h 30m</td>
+                  <td class="text-on-surface px-6 py-5 text-right text-sm font-bold">$1,000.00</td>
+                  <td class="px-6 py-5">
+                    <span class="bg-tertiary-container text-on-tertiary-container inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold">
+                      <span class="bg-tertiary mr-2 h-1.5 w-1.5 rounded-full"></span>
+                      Completado
+                    </span>
+                  </td>
+                  <td class="px-6 py-5 text-right">
+                    <button class="text-on-surface-variant hover:text-primary p-2 transition-colors">
+                      <span class="material-symbols-outlined">more_vert</span>
+                    </button>
+                  </td>
+                </tr>
+                <!-- Row 2 -->
+                <tr class="hover:bg-surface-container-low group transition-colors">
+                  <td class="px-6 py-5">
+                    <div class="flex items-center gap-3">
+                      <div class="bg-surface-container-high text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                        <span class="material-symbols-outlined">flight_takeoff</span>
+                      </div>
+                      <div>
+                        <p class="text-on-surface font-body font-bold">Aeropuerto Internacional de las Américas</p>
+                        <p class="text-on-surface-variant text-xs">Larga Estancia</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-on-surface px-6 py-5 text-sm font-medium">08 Oct 2025</td>
+                  <td class="text-on-surface-variant px-6 py-5 text-sm">05:00 - 23:00</td>
+                  <td class="text-on-surface-variant px-6 py-5 text-sm">3 Días</td>
+                  <td class="text-on-surface px-6 py-5 text-right text-sm font-bold">$10,000.00</td>
+                  <td class="px-6 py-5">
+                    <span class="bg-error-container text-on-error-container inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold">
+                      <span class="bg-error mr-2 h-1.5 w-1.5 rounded-full"></span>
+                      Cancelado
+                    </span>
+                  </td>
+                  <td class="px-6 py-5 text-right">
+                    <button class="text-on-surface-variant hover:text-primary p-2 transition-colors">
+                      <span class="material-symbols-outlined">more_vert</span>
+                    </button>
+                  </td>
+                </tr>
+                <!-- Row 3 -->
+                <tr class="hover:bg-surface-container-low group transition-colors">
+                  <td class="px-6 py-5">
+                    <div class="flex items-center gap-3">
+                      <div class="bg-surface-container-high text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                        <span class="material-symbols-outlined">shopping_bag</span>
+                      </div>
+                      <div>
+                        <p class="text-on-surface font-body font-bold">Plaza Central</p>
+                        <p class="text-on-surface-variant text-xs">Nivel -2, B12</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-on-surface px-6 py-5 text-sm font-medium">05 Oct 2025</td>
+                  <td class="text-on-surface-variant px-6 py-5 text-sm">16:15 - 19:45</td>
+                  <td class="text-on-surface-variant px-6 py-5 text-sm">3h 30m</td>
+                  <td class="text-on-surface px-6 py-5 text-right text-sm font-bold">$330.00</td>
+                  <td class="px-6 py-5">
+                    <span class="bg-tertiary-container text-on-tertiary-container inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold">
+                      <span class="bg-tertiary mr-2 h-1.5 w-1.5 rounded-full"></span>
+                      Completado
+                    </span>
+                  </td>
+                  <td class="px-6 py-5 text-right">
+                    <button class="text-on-surface-variant hover:text-primary p-2 transition-colors">
+                      <span class="material-symbols-outlined">more_vert</span>
+                    </button>
+                  </td>
+                </tr>
+                <!-- Row 4 -->
+                <tr class="hover:bg-surface-container-low group transition-colors">
+                  <td class="px-6 py-5">
+                    <div class="flex items-center gap-3">
+                      <div class="bg-surface-container-high text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                        <span class="material-symbols-outlined">local_parking</span>
+                      </div>
+                      <div>
+                        <p class="text-on-surface font-body font-bold">Downtown Center</p>
+                        <p class="text-on-surface-variant text-xs">Plaza A-15</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-on-surface px-6 py-5 text-sm font-medium">01 Oct 2025</td>
+                  <td class="text-on-surface-variant px-6 py-5 text-sm">08:00 - 18:00</td>
+                  <td class="text-on-surface-variant px-6 py-5 text-sm">10h 00m</td>
+                  <td class="text-on-surface px-6 py-5 text-right text-sm font-bold">$1,000.00</td>
+                  <td class="px-6 py-5">
+                    <span class="bg-tertiary-container text-on-tertiary-container inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold">
+                      <span class="bg-tertiary mr-2 h-1.5 w-1.5 rounded-full"></span>
+                      Completado
+                    </span>
+                  </td>
+                  <td class="px-6 py-5 text-right">
+                    <button class="text-on-surface-variant hover:text-primary p-2 transition-colors">
+                      <span class="material-symbols-outlined">more_vert</span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Pagination -->
+          <div class="bg-surface-container-low flex items-center justify-between px-6 py-4">
+            <span class="text-on-surface-variant font-body text-sm">Mostrando 1 a 10 de 48 reservas</span>
+            <div class="flex items-center gap-2">
+              <button class="hover:bg-surface-container-high text-on-surface-variant rounded-lg p-2 transition-colors disabled:opacity-30" disabled="">
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+              <button class="bg-primary text-on-primary h-8 w-8 rounded-lg text-sm font-bold">1</button>
+              <button class="hover:bg-surface-container-high h-8 w-8 rounded-lg text-sm font-medium transition-colors">2</button>
+              <button class="hover:bg-surface-container-high h-8 w-8 rounded-lg text-sm font-medium transition-colors">3</button>
+              <button class="hover:bg-surface-container-high h-8 w-8 rounded-lg text-sm font-medium transition-colors">...</button>
+              <button class="hover:bg-surface-container-high h-8 w-8 rounded-lg text-sm font-medium transition-colors">5</button>
+              <button class="hover:bg-surface-container-high text-on-surface-variant rounded-lg p-2 transition-colors">
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
