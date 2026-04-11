@@ -10,7 +10,7 @@ $res = $mysqli->query("SELECT * FROM movimientos WHERE id = $id");
 $data = $res->fetch_assoc();
 
 if (!$data) {
-    die("Ticket no encontrado.");
+    die('Ticket no encontrado.');
 }
 ?>
 
@@ -34,11 +34,18 @@ if (!$data) {
     </div>
     <hr>
     <p><span class="bold">ID:</span> <?php echo $data['id']; ?></p>
-    <p><span class="bold">PLACA:</span> <?php echo strtoupper($data['placa']); ?></p>
+    <p><span class="bold">PLACA:</span> <?php echo strtoupper(
+        $data['placa'],
+    ); ?></p>
     <p><span class="bold">MARCA:</span> <?php echo $data['marca']; ?></p>
     <p><span class="bold">TIPO:</span> <?php echo $data['tipo']; ?></p>
-    <p><span class="bold">ENTRADA:</span> <?php echo $data['hora_entrada']; ?></p>
-    <p><span class="bold">TARIFA/H:</span> $<?php echo number_format($data['tarifa_por_hora'], 2); ?></p>
+    <p><span class="bold">ENTRADA:</span> <?php echo $data[
+        'hora_entrada'
+    ]; ?></p>
+    <p><span class="bold">TARIFA/H:</span> $<?php echo number_format(
+        $data['tarifa_por_hora'],
+        2,
+    ); ?></p>
     <hr>
     <div class="center footer">
         <p>Conserve este ticket para su salida.</p>

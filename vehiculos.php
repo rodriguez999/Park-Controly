@@ -6,7 +6,7 @@ $user_name = $_SESSION['usuario'];
 
 // Consulta para traer los vehículos registrados (asumiendo que tienes una tabla 'vehiculos')
 // Si aún no tienes la tabla, esta consulta fallará hasta que la creemos.
-$res_vehiculos = $mysqli->query("SELECT * FROM vehiculos ORDER BY id DESC");
+$res_vehiculos = $mysqli->query('SELECT * FROM vehiculos ORDER BY id DESC');
 ?>
 <!doctype html>
 <html class="light" lang="es">
@@ -68,7 +68,7 @@ $res_vehiculos = $mysqli->query("SELECT * FROM vehiculos ORDER BY id DESC");
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <?php if ($res_vehiculos && $res_vehiculos->num_rows > 0): ?>
-                    <?php while($carro = $res_vehiculos->fetch_assoc()): ?>
+                    <?php while ($carro = $res_vehiculos->fetch_assoc()): ?>
                         <div class="bg-white p-6 rounded-3xl shadow-sm border border-outline-variant/20 relative overflow-hidden">
                             <div class="flex justify-between items-start mb-4">
                                 <div class="p-3 bg-gray-100 rounded-2xl text-primary">
@@ -76,10 +76,18 @@ $res_vehiculos = $mysqli->query("SELECT * FROM vehiculos ORDER BY id DESC");
                                 </div>
                                 <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded-lg uppercase">Verificado</span>
                             </div>
-                            <h3 class="text-xl font-bold text-on-surface"><?php echo $carro['placa']; ?></h3>
-                            <p class="text-on-surface-variant text-sm"><?php echo $carro['marca'] . " " . $carro['modelo']; ?></p>
+                            <h3 class="text-xl font-bold text-on-surface"><?php echo $carro[
+                                'placa'
+                            ]; ?></h3>
+                            <p class="text-on-surface-variant text-sm"><?php echo $carro[
+                                'marca'
+                            ] .
+                                ' ' .
+                                $carro['modelo']; ?></p>
                             <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
-                                <span class="text-xs text-gray-400">Registrado en: <?php echo $carro['fecha_registro']; ?></span>
+                                <span class="text-xs text-gray-400">Registrado en: <?php echo $carro[
+                                    'fecha_registro'
+                                ]; ?></span>
                                 <span class="material-symbols-outlined text-gray-400 hover:text-red-500 cursor-pointer">delete</span>
                             </div>
                         </div>

@@ -4,20 +4,22 @@ require_once 'functions.php';
 $err = '';
 $msg = '';
 
-if($_POST) {
-    $username  = trim($_POST['username']);
-    $nombre    = trim($_POST['nombre']);
-    $password  = $_POST['password'];
+if ($_POST) {
+    $username = trim($_POST['username']);
+    $nombre = trim($_POST['nombre']);
+    $password = $_POST['password'];
     $password2 = $_POST['password2'];
 
-    if($password !== $password2) {
+    if ($password !== $password2) {
         $err = 'Las contraseñas no coinciden.';
     } else {
         // Usamos la función de functions.php
-        if(register_user($mysqli, $username, $nombre, $password)) {
-            $msg = 'Usuario registrado correctamente. Ahora puedes iniciar sesión.';
+        if (register_user($mysqli, $username, $nombre, $password)) {
+            $msg =
+                'Usuario registrado correctamente. Ahora puedes iniciar sesión.';
         } else {
-            $err = 'Error al registrar usuario. Puede que el nombre de usuario ya exista.';
+            $err =
+                'Error al registrar usuario. Puede que el nombre de usuario ya exista.';
         }
     }
 }
@@ -91,13 +93,13 @@ if($_POST) {
               </div>
         <h2 class="text-2xl font-bold mb-6 text-center">Registrarse</h2>
                 </div>
-    <?php if($err): ?>
+    <?php if ($err): ?>
       <div class="mb-4 p-3 bg-red-100 border-l-4 border-red-500 text-red-700 text-sm">
         <?php echo $err; ?>
       </div>
     <?php endif; ?>
 
-    <?php if($msg): ?>
+    <?php if ($msg): ?>
       <div class="mb-4 p-3 bg-green-100 border-l-4 border-green-500 text-green-700 text-sm">
         <?php echo $msg; ?>
       </div>

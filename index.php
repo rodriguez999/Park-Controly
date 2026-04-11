@@ -3,22 +3,22 @@
 require_once 'functions.php';
 
 // Si ya está logueado, mandarlo al menú
-if(is_logged_in()) { 
-    header('Location:menu.php'); 
-    exit; 
+if (is_logged_in()) {
+    header('Location:menu.php');
+    exit();
 }
 
 $err = '';
 
 // Procesar el formulario cuando se hace POST
-if($_POST) {
+if ($_POST) {
     $u = trim($_POST['usuario']);
     $p = $_POST['clave'];
-    
-    if(login_user($mysqli, $u, $p)) {
-        header('Location:menu.php'); 
-        exit;
-    } else { 
+
+    if (login_user($mysqli, $u, $p)) {
+        header('Location:menu.php');
+        exit();
+    } else {
         $err = 'Usuario o contraseña incorrectos.';
     }
 }
@@ -92,7 +92,7 @@ if($_POST) {
               </div>
               <h2 class="text-2xl font-bold text-gray-900">Iniciar Sesión</h2>
               
-              <?php if($err): ?>
+              <?php if ($err): ?>
                 <div class="mt-4 p-3 bg-red-100 border-l-4 border-red-500 text-red-700 text-sm">
                     <?php echo $err; ?>
                 </div>

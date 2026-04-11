@@ -2,24 +2,30 @@
 require_once 'functions.php';
 require_login();
 
-$mensaje = "";
+$mensaje = '';
 $detalles_pago = null;
 
 // 1. BUSCAR VEHÍCULO PARA SALIDA
 if (isset($_POST['buscar_placa'])) {
     $placa = $_POST['placa'];
-    $res = $mysqli->query("SELECT * FROM movimientos WHERE placa = '$placa' AND estado = 'EN_PARQUEO' LIMIT 1");
-    
+    $res = $mysqli->query(
+        "SELECT * FROM movimientos WHERE placa = '$placa' AND estado = 'EN_PARQUEO' LIMIT 1",
+    );
+
     if ($res->num_rows > 0) {
         $movimiento = $res->fetch_assoc();
         $entrada = new DateTime($movimiento['hora_entrada']);
         $ahora = new DateTime();
         $diferencia = $entrada->diff($ahora);
-        
+
         // Cálculo de horas (mínimo 1 hora)
-        $horas = $diferencia->h + ($diferencia->days * 24);
-        if ($diferencia->i > 0) $horas++; 
-        if ($horas == 0) $horas = 1;
+        $horas = $diferencia->h + $diferencia->days * 24;
+        if ($diferencia->i > 0) {
+            $horas++;
+        }
+        if ($horas == 0) {
+            $horas = 1;
+        }
 
         $precio_por_hora = 75; // Esto podrías traerlo de tu tabla 'tarifas_tipo'
         $total = $horas * $precio_por_hora;
@@ -28,11 +34,11 @@ if (isset($_POST['buscar_placa'])) {
             'id' => $movimiento['id'],
             'placa' => $placa,
             'entrada' => $movimiento['hora_entrada'],
-            'tiempo' => $horas . " hora(s)",
-            'total' => $total
+            'tiempo' => $horas . ' hora(s)',
+            'total' => $total,
         ];
     } else {
-        $mensaje = "No se encontró un vehículo con esa placa en el parqueo.";
+        $mensaje = 'No se encontró un vehículo con esa placa en el parqueo.';
     }
 }
 
@@ -40,14 +46,16 @@ if (isset($_POST['buscar_placa'])) {
 if (isset($_POST['confirmar_pago'])) {
     $id = $_POST['id_movimiento'];
     $monto = $_POST['monto'];
-    
-    $stmt = $mysqli->prepare("UPDATE movimientos SET hora_salida = NOW(), total_pago = ?, estado = 'COMPLETADO' WHERE id = ?");
-    $stmt->bind_param("di", $monto, $id);
-    
+
+    $stmt = $mysqli->prepare(
+        "UPDATE movimientos SET hora_salida = NOW(), total_pago = ?, estado = 'COMPLETADO' WHERE id = ?",
+    );
+    $stmt->bind_param('di', $monto, $id);
+
     if ($stmt->execute()) {
-        $mensaje = "Salida registrada con éxito. ¡Cobro completado!";
+        $mensaje = 'Salida registrada con éxito. ¡Cobro completado!';
     } else {
-        $mensaje = "Error al procesar el pago.";
+        $mensaje = 'Error al procesar el pago.';
     }
 }
 ?>
@@ -74,8 +82,10 @@ if (isset($_POST['confirmar_pago'])) {
     <div class="flex">
         <aside class="w-20 lg:w-64 bg-white min-h-screen border-r border-gray-200 flex flex-col">
             <div class="p-6 flex items-center gap-3">
-                <div class="bg-primary w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold">P</div>
-                <a class="font-bold text-xl hidden lg:block text-primary" href="menu.php">ParkControl</a>
+                <div class="bg-primary w-10 h-10 rounded-xl flex items-center justify-center text-white">
+                    <a class="material-symbols-outlined" href="menu.php">local_parking</a>
+                </div>
+                    <a class="font-headline font-bold text-xl hidden lg:block" href="menu.php">ParkControl</a>
             </div>
             <nav class="flex-1 mt-4 px-3 space-y-2">
                 <a href="menu.php" class="flex items-center gap-4 p-3 text-gray-600 hover:bg-gray-100 rounded-xl">
@@ -123,28 +133,41 @@ if (isset($_POST['confirmar_pago'])) {
                 <?php if ($detalles_pago): ?>
                     <div class="bg-white rounded-3xl shadow-xl border-2 border-primary/20 overflow-hidden animate-in fade-in zoom-in duration-300">
                         <div class="bg-primary p-6 text-white">
-                            <h2 class="text-xl font-bold">Ticket de Salida: <?php echo $detalles_pago['placa']; ?></h2>
+                            <h2 class="text-xl font-bold">Ticket de Salida: <?php echo $detalles_pago[
+                                'placa'
+                            ]; ?></h2>
                         </div>
                         <div class="p-8">
                             <div class="grid grid-cols-2 gap-8 mb-8">
                                 <div>
                                     <p class="text-xs font-bold text-gray-400 uppercase">Hora de Entrada</p>
-                                    <p class="text-lg font-semibold"><?php echo $detalles_pago['entrada']; ?></p>
+                                    <p class="text-lg font-semibold"><?php echo $detalles_pago[
+                                        'entrada'
+                                    ]; ?></p>
                                 </div>
                                 <div>
                                     <p class="text-xs font-bold text-gray-400 uppercase">Tiempo Transcurrido</p>
-                                    <p class="text-lg font-semibold text-primary"><?php echo $detalles_pago['tiempo']; ?></p>
+                                    <p class="text-lg font-semibold text-primary"><?php echo $detalles_pago[
+                                        'tiempo'
+                                    ]; ?></p>
                                 </div>
                             </div>
                             
                             <div class="bg-gray-50 p-6 rounded-2xl flex justify-between items-center border border-gray-100">
                                 <div>
                                     <p class="text-sm text-gray-500 font-medium">Total a Pagar</p>
-                                    <p class="text-4xl font-black text-on-surface">$<?php echo number_format($detalles_pago['total'], 2); ?></p>
+                                    <p class="text-4xl font-black text-on-surface">$<?php echo number_format(
+                                        $detalles_pago['total'],
+                                        2,
+                                    ); ?></p>
                                 </div>
                                 <form action="salida.php" method="POST">
-                                    <input type="hidden" name="id_movimiento" value="<?php echo $detalles_pago['id']; ?>">
-                                    <input type="hidden" name="monto" value="<?php echo $detalles_pago['total']; ?>">
+                                    <input type="hidden" name="id_movimiento" value="<?php echo $detalles_pago[
+                                        'id'
+                                    ]; ?>">
+                                    <input type="hidden" name="monto" value="<?php echo $detalles_pago[
+                                        'total'
+                                    ]; ?>">
                                     <button type="submit" name="confirmar_pago" class="bg-green-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-100">
                                         Procesar Pago
                                     </button>

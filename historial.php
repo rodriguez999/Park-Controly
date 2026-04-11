@@ -5,7 +5,9 @@ require_login();
 $user_name = $_SESSION['usuario'];
 
 // Consultamos todos los movimientos de la base de datos
-$res_historial = $mysqli->query("SELECT * FROM movimientos ORDER BY hora_entrada DESC");
+$res_historial = $mysqli->query(
+    'SELECT * FROM movimientos ORDER BY hora_entrada DESC',
+);
 ?>
 <!doctype html>
 <html class="light" lang="es">
@@ -75,19 +77,37 @@ $res_historial = $mysqli->query("SELECT * FROM movimientos ORDER BY hora_entrada
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-outline-variant/10">
-                            <?php if ($res_historial && $res_historial->num_rows > 0): ?>
-                                <?php while($row = $res_historial->fetch_assoc()): ?>
+                            <?php if (
+                                $res_historial &&
+                                $res_historial->num_rows > 0
+                            ): ?>
+                                <?php while (
+                                    $row = $res_historial->fetch_assoc()
+                                ): ?>
                                 <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-6 py-4 font-bold text-primary"><?php echo $row['placa']; ?></td>
-                                    <td class="px-6 py-4 text-sm"><?php echo $row['hora_entrada']; ?></td>
-                                    <td class="px-6 py-4 text-sm"><?php echo $row['hora_salida'] ?? '---'; ?></td>
+                                    <td class="px-6 py-4 font-bold text-primary"><?php echo $row[
+                                        'placa'
+                                    ]; ?></td>
+                                    <td class="px-6 py-4 text-sm"><?php echo $row[
+                                        'hora_entrada'
+                                    ]; ?></td>
+                                    <td class="px-6 py-4 text-sm"><?php echo $row[
+                                        'hora_salida'
+                                    ] ?? '---'; ?></td>
                                     <td class="px-6 py-4 font-semibold text-on-surface">
-                                        <?php echo $row['total_pago'] ? '$' . number_format($row['total_pago'], 2) : '$0.00'; ?>
+                                        <?php echo $row['total_pago']
+                                            ? '$' .
+                                                number_format(
+                                                    $row['total_pago'],
+                                                    2,
+                                                )
+                                            : '$0.00'; ?>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <?php 
-                                            $statusClass = $row['estado'] == 'EN_PARQUEO' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700';
-                                        ?>
+                                        <?php $statusClass =
+                                            $row['estado'] == 'EN_PARQUEO'
+                                                ? 'bg-blue-100 text-blue-700'
+                                                : 'bg-green-100 text-green-700'; ?>
                                         <span class="px-3 py-1 rounded-full text-[10px] font-bold <?php echo $statusClass; ?>">
                                             <?php echo $row['estado']; ?>
                                         </span>

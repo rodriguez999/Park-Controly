@@ -1,317 +1,547 @@
 <!doctype html>
 
 <html class="light" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>ParkControl - Tarifas</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link rel="icon" type="image/x-icon" href="../images/pc.ico" />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "surface-dim": "#f1f3f9",
-              "on-tertiary": "#ffffff",
-              tertiary: "#006d4a",
-              "on-secondary-fixed": "#111c2d",
-              "on-error-container": "#410002",
-              "tertiary-container": "#6ffbbe",
-              "secondary-fixed": "#d8e3fb",
-              "on-tertiary-fixed-variant": "#005236",
-              "on-primary-fixed-variant": "#003baf",
-              "tertiary-fixed-dim": "#4edea3",
-              "surface-bright": "#f9faff",
-              "primary-fixed": "#dce1ff",
-              background: "#f9faff",
-              "surface-container-high": "#e1e2ec",
-              "on-secondary-fixed-variant": "#3c475a",
-              error: "#ba1a1a",
-              "on-primary": "#ffffff",
-              "on-tertiary-fixed": "#002113",
-              "inverse-primary": "#b6c4ff",
-              "on-secondary-container": "#111c2d",
-              "surface-variant": "#e1e2ec",
-              "surface-container-low": "#f3f3fa",
-              "secondary-container": "#d8e3fb",
-              "on-secondary": "#263143",
-              "secondary-fixed-dim": "#bcc7de",
-              "tertiary-fixed": "#6ffbbe",
-              "on-surface": "#191c20",
-              primary: "#2454d1",
-              "on-primary-container": "#00164f",
-              "outline-variant": "#c4c5d6",
-              surface: "#f9faff",
-              "primary-container": "#dbe0ff",
-              "on-tertiary-container": "#002113",
-              "surface-tint": "#2454d1",
-              "inverse-on-surface": "#f0f0f7",
-              "primary-fixed-dim": "#b6c4ff",
-              "on-surface-variant": "#44474e",
-              "surface-container-lowest": "#ffffff",
-              outline: "#74777f",
-              "surface-container-highest": "#e1e2ec",
-              "on-error": "#ffffff",
-              "inverse-surface": "#2e3036",
-              "on-background": "#191c20",
-              "surface-container": "#ededf4",
-              secondary: "#565e71",
-              "on-primary-fixed": "#00164f",
-              "error-container": "#ffdad6",
-            },
-            fontFamily: {
-              headline: ["Manrope"],
-              body: ["Inter"],
-              label: ["Inter"],
-            },
-            borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
-          },
-        },
-      };
-    </script>
-    <style>
-      .material-symbols-outlined {
-        font-variation-settings:
-          "FILL" 0,
-          "wght" 400,
-          "GRAD" 0,
-          "opsz" 24;
-        vertical-align: middle;
-      }
-      body {
-        background-color: #f9faff;
-        color: #191c20;
-        font-family: "Inter", sans-serif;
-      }
-      .kinetic-gradient {
-        background: linear-gradient(135deg, #2454d1 0%, #5c85ff 100%);
-      }
-      .sidebar-rail {
-        width: 80px;
-        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        overflow: hidden;
-      }
-      .sidebar-rail:hover {
-        width: 280px;
-      }
-      .nav-label {
-        opacity: 0;
-        white-space: nowrap;
-        transition: opacity 0.2s ease-in-out;
-        pointer-events: none;
-      }
-      .sidebar-rail:hover .nav-label {
-        opacity: 1;
-        pointer-events: auto;
-      }
-      .sidebar-rail:hover .sidebar-branding {
-        align-items: flex-start;
-        padding-left: 24px;
-      }
-      .sidebar-branding {
-        transition: all 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-      }
-    </style>
-  </head>
-  <body class="flex min-h-screen flex-col">
-    <!-- TopNavBar -->
-    <nav class="bg-surface/80 border-outline-variant/30 sticky top-0 z-50 flex h-20 items-center justify-between border-b px-8 backdrop-blur-xl">
-      <div class="flex items-center gap-12">
-        <a href="Index.html" class="font-headline text-primary text-2xl font-extrabold tracking-tight">ParkControl</a>
-        <div class="hidden items-center gap-8 md:flex">
-          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Index.html">Inicio</a>
-          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Reservaciones.html">Mis Reservaciones</a>
-          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Vehiculos.html">Mis Vehículos</a>
-          <a class="text-primary font-bold" href="Tarifas.html">Tarifas</a>
-          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Historial.html">Historial</a>
-        </div>
-      </div>
-      <div class="flex items-center gap-6">
-        <div class="group relative">
-          <span class="material-symbols-outlined text-outline absolute top-1/2 left-4 -translate-y-1/2">search</span>
-          <input
-            class="bg-surface-container-highest/50 text-on-surface border-outline-variant/30 focus:ring-primary focus:bg-surface-container-highest placeholder:text-outline w-64 rounded-xl border py-2 pr-6 pl-12 text-sm transition-all focus:ring-2"
-            placeholder="Buscar parqueos…"
-            type="text"
-          />
-        </div>
-        <div class="flex items-center gap-4">
-          <button class="text-on-surface-variant hover:bg-surface-container rounded-lg p-2 transition-all">
-            <span class="material-symbols-outlined">notifications</span>
-          </button>
-          <button class="text-on-surface-variant hover:bg-surface-container rounded-lg p-2 transition-all">
-            <span class="material-symbols-outlined">help</span>
-          </button>
-        </div>
-        <img
-          alt="User Profile Avatar"
-          class="border-outline-variant/30 h-10 w-10 rounded-full border object-cover"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-1fzsWWPrkN1PiSLAn38cRBLTgrLspQO7SZaL872B2Rb-qBVvREG_eGGbYM5jEcKuiyVq67oam337dcXpsNtwzwU8C02sX_tAzKk2wDbib_DYp2CWbEyuTz57JhbmbdxyA-4B-TTwuvbjiluqwXdGQAMWWr3OOxJEtbSvZNkVKUynp3qNq8SVK6VSsbctmrTEYTI7pJFDp-_Fyun2O_Nm-ZlTkA_MSkRUb_e-vwzRe2qv06kFopxH3LxbQZP8k0MSONNA1HM-8Q"
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>ParkControl - Tarifas</title>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+        <link rel="icon" type="image/x-icon" href="../images/pc.ico" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+            rel="stylesheet"
         />
-      </div>
-    </nav>
-    <div class="flex flex-1 overflow-hidden">
-      <!-- SideNavBar Refined -->
-      <aside class="sidebar-rail bg-surface-container-low border-outline-variant/30 hidden flex-col gap-10 border-r py-8 lg:flex">
-        <div class="sidebar-branding px-2">
-          <div class="bg-primary mb-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
-            <span class="material-symbols-outlined text-on-primary text-2xl">local_parking</span>
-          </div>
-          <div class="nav-label flex flex-col gap-0.5">
-            <span class="font-headline text-on-surface text-lg font-bold">ParkControl</span>
-            <span class="font-label text-on-surface-variant text-[10px] tracking-[0.2em] uppercase">Portal de clientes</span>
-          </div>
-        </div>
-        <nav class="flex flex-col gap-3 px-4">
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Index.html">
-            <span class="material-symbols-outlined shrink-0">directions_car</span>
-            <span class="nav-label font-medium">Inicio</span>
-          </a>
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Reservaciones.html">
-            <span class="material-symbols-outlined shrink-0">calendar_today</span>
-            <span class="nav-label font-medium">Mis Reservaciones</span>
-          </a>
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Vehiculos.html">
-            <span class="material-symbols-outlined shrink-0">minor_crash</span>
-            <span class="nav-label font-medium">Mis Vehículos</span>
-          </a>
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="EncontrarParqueo.html">
-            <span class="material-symbols-outlined shrink-0">map</span>
-            <span class="nav-label text-sm font-medium">Encontrar parqueo</span>
-          </a>
-          <a class="bg-primary text-on-primary shadow-primary/20 flex items-center gap-6 rounded-xl px-3 py-3 shadow-lg" href="Tarifas.html">
-            <span class="material-symbols-outlined shrink-0">payments</span>
-            <span class="nav-label font-medium">Tarifas</span>
-          </a>
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Historial.html">
-            <span class="material-symbols-outlined shrink-0">history</span>
-            <span class="nav-label font-medium">Historial</span>
-          </a>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+            rel="stylesheet"
+        />
+        <script id="tailwind-config">
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        colors: {
+                            'surface-dim': '#f1f3f9',
+                            'on-tertiary': '#ffffff',
+                            tertiary: '#006d4a',
+                            'on-secondary-fixed': '#111c2d',
+                            'on-error-container': '#410002',
+                            'tertiary-container': '#6ffbbe',
+                            'secondary-fixed': '#d8e3fb',
+                            'on-tertiary-fixed-variant': '#005236',
+                            'on-primary-fixed-variant': '#003baf',
+                            'tertiary-fixed-dim': '#4edea3',
+                            'surface-bright': '#f9faff',
+                            'primary-fixed': '#dce1ff',
+                            background: '#f9faff',
+                            'surface-container-high': '#e1e2ec',
+                            'on-secondary-fixed-variant': '#3c475a',
+                            error: '#ba1a1a',
+                            'on-primary': '#ffffff',
+                            'on-tertiary-fixed': '#002113',
+                            'inverse-primary': '#b6c4ff',
+                            'on-secondary-container': '#111c2d',
+                            'surface-variant': '#e1e2ec',
+                            'surface-container-low': '#f3f3fa',
+                            'secondary-container': '#d8e3fb',
+                            'on-secondary': '#263143',
+                            'secondary-fixed-dim': '#bcc7de',
+                            'tertiary-fixed': '#6ffbbe',
+                            'on-surface': '#191c20',
+                            primary: '#2454d1',
+                            'on-primary-container': '#00164f',
+                            'outline-variant': '#c4c5d6',
+                            surface: '#f9faff',
+                            'primary-container': '#dbe0ff',
+                            'on-tertiary-container': '#002113',
+                            'surface-tint': '#2454d1',
+                            'inverse-on-surface': '#f0f0f7',
+                            'primary-fixed-dim': '#b6c4ff',
+                            'on-surface-variant': '#44474e',
+                            'surface-container-lowest': '#ffffff',
+                            outline: '#74777f',
+                            'surface-container-highest': '#e1e2ec',
+                            'on-error': '#ffffff',
+                            'inverse-surface': '#2e3036',
+                            'on-background': '#191c20',
+                            'surface-container': '#ededf4',
+                            secondary: '#565e71',
+                            'on-primary-fixed': '#00164f',
+                            'error-container': '#ffdad6',
+                        },
+                        fontFamily: {
+                            headline: ['Manrope'],
+                            body: ['Inter'],
+                            label: ['Inter'],
+                        },
+                        borderRadius: {
+                            DEFAULT: '0.25rem',
+                            lg: '0.5rem',
+                            xl: '0.75rem',
+                            full: '9999px',
+                        },
+                    },
+                },
+            };
+        </script>
+        <style>
+            .material-symbols-outlined {
+                font-variation-settings:
+                    'FILL' 0,
+                    'wght' 400,
+                    'GRAD' 0,
+                    'opsz' 24;
+                vertical-align: middle;
+            }
+            body {
+                background-color: #f9faff;
+                color: #191c20;
+                font-family: 'Inter', sans-serif;
+            }
+            .kinetic-gradient {
+                background: linear-gradient(135deg, #2454d1 0%, #5c85ff 100%);
+            }
+            .sidebar-rail {
+                width: 80px;
+                transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                overflow: hidden;
+            }
+            .sidebar-rail:hover {
+                width: 280px;
+            }
+            .nav-label {
+                opacity: 0;
+                white-space: nowrap;
+                transition: opacity 0.2s ease-in-out;
+                pointer-events: none;
+            }
+            .sidebar-rail:hover .nav-label {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .sidebar-rail:hover .sidebar-branding {
+                align-items: flex-start;
+                padding-left: 24px;
+            }
+            .sidebar-branding {
+                transition: all 0.3s ease;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body class="flex min-h-screen flex-col">
+        <!-- TopNavBar -->
+        <nav
+            class="bg-surface/80 border-outline-variant/30 sticky top-0 z-50 flex h-20 items-center justify-between border-b px-8 backdrop-blur-xl"
+        >
+            <div class="flex items-center gap-12">
+                <a
+                    href="Index.html"
+                    class="font-headline text-primary text-2xl font-extrabold tracking-tight"
+                    >ParkControl</a
+                >
+                <div class="hidden items-center gap-8 md:flex">
+                    <a
+                        class="text-on-surface-variant hover:text-primary font-medium transition-colors"
+                        href="Index.html"
+                        >Inicio</a
+                    >
+                    <a
+                        class="text-on-surface-variant hover:text-primary font-medium transition-colors"
+                        href="Reservaciones.html"
+                        >Mis Reservaciones</a
+                    >
+                    <a
+                        class="text-on-surface-variant hover:text-primary font-medium transition-colors"
+                        href="Vehiculos.html"
+                        >Mis Vehículos</a
+                    >
+                    <a class="text-primary font-bold" href="Tarifas.html"
+                        >Tarifas</a
+                    >
+                    <a
+                        class="text-on-surface-variant hover:text-primary font-medium transition-colors"
+                        href="Historial.html"
+                        >Historial</a
+                    >
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="group relative">
+                    <span
+                        class="material-symbols-outlined text-outline absolute top-1/2 left-4 -translate-y-1/2"
+                        >search</span
+                    >
+                    <input
+                        class="bg-surface-container-highest/50 text-on-surface border-outline-variant/30 focus:ring-primary focus:bg-surface-container-highest placeholder:text-outline w-64 rounded-xl border py-2 pr-6 pl-12 text-sm transition-all focus:ring-2"
+                        placeholder="Buscar parqueos…"
+                        type="text"
+                    />
+                </div>
+                <div class="flex items-center gap-4">
+                    <button
+                        class="text-on-surface-variant hover:bg-surface-container rounded-lg p-2 transition-all"
+                    >
+                        <span class="material-symbols-outlined"
+                            >notifications</span
+                        >
+                    </button>
+                    <button
+                        class="text-on-surface-variant hover:bg-surface-container rounded-lg p-2 transition-all"
+                    >
+                        <span class="material-symbols-outlined">help</span>
+                    </button>
+                </div>
+                <img
+                    alt="User Profile Avatar"
+                    class="border-outline-variant/30 h-10 w-10 rounded-full border object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-1fzsWWPrkN1PiSLAn38cRBLTgrLspQO7SZaL872B2Rb-qBVvREG_eGGbYM5jEcKuiyVq67oam337dcXpsNtwzwU8C02sX_tAzKk2wDbib_DYp2CWbEyuTz57JhbmbdxyA-4B-TTwuvbjiluqwXdGQAMWWr3OOxJEtbSvZNkVKUynp3qNq8SVK6VSsbctmrTEYTI7pJFDp-_Fyun2O_Nm-ZlTkA_MSkRUb_e-vwzRe2qv06kFopxH3LxbQZP8k0MSONNA1HM-8Q"
+                />
+            </div>
         </nav>
-        <div class="mt-auto flex flex-col gap-3 px-4">
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="#">
-            <span class="material-symbols-outlined shrink-0">settings</span>
-            <span class="nav-label font-medium">Configuración</span>
-          </a>
-          <a class="text-error hover:bg-error-container/20 flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="#">
-            <span class="material-symbols-outlined shrink-0">logout</span>
-            <span class="nav-label font-medium">Cerrar sesión</span>
-          </a>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- SideNavBar Refined -->
+            <aside
+                class="sidebar-rail bg-surface-container-low border-outline-variant/30 hidden flex-col gap-10 border-r py-8 lg:flex"
+            >
+                <div class="sidebar-branding px-2">
+                    <div
+                        class="bg-primary mb-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                    >
+                        <span
+                            class="material-symbols-outlined text-on-primary text-2xl"
+                            >local_parking</span
+                        >
+                    </div>
+                    <div class="nav-label flex flex-col gap-0.5">
+                        <span
+                            class="font-headline text-on-surface text-lg font-bold"
+                            >ParkControl</span
+                        >
+                        <span
+                            class="font-label text-on-surface-variant text-[10px] tracking-[0.2em] uppercase"
+                            >Portal de clientes</span
+                        >
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-3 px-4">
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="Index.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >directions_car</span
+                        >
+                        <span class="nav-label font-medium">Inicio</span>
+                    </a>
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="Reservaciones.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >calendar_today</span
+                        >
+                        <span class="nav-label font-medium"
+                            >Mis Reservaciones</span
+                        >
+                    </a>
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="Vehiculos.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >minor_crash</span
+                        >
+                        <span class="nav-label font-medium">Mis Vehículos</span>
+                    </a>
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="EncontrarParqueo.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >map</span
+                        >
+                        <span class="nav-label text-sm font-medium"
+                            >Encontrar parqueo</span
+                        >
+                    </a>
+                    <a
+                        class="bg-primary text-on-primary shadow-primary/20 flex items-center gap-6 rounded-xl px-3 py-3 shadow-lg"
+                        href="Tarifas.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >payments</span
+                        >
+                        <span class="nav-label font-medium">Tarifas</span>
+                    </a>
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="Historial.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >history</span
+                        >
+                        <span class="nav-label font-medium">Historial</span>
+                    </a>
+                </nav>
+                <div class="mt-auto flex flex-col gap-3 px-4">
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="#"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >settings</span
+                        >
+                        <span class="nav-label font-medium">Configuración</span>
+                    </a>
+                    <a
+                        class="text-error hover:bg-error-container/20 flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="#"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >logout</span
+                        >
+                        <span class="nav-label font-medium">Cerrar sesión</span>
+                    </a>
+                </div>
+            </aside>
+            <main class="bg-surface flex-1 overflow-y-auto">
+                <!-- Content Area -->
+                <div class="mx-auto w-full max-w-7xl space-y-8 p-10">
+                    <!-- Hero Header -->
+                    <section class="grid grid-cols-1 gap-8 md:grid-cols-3">
+                        <div class="space-y-4 md:col-span-2">
+                            <h3
+                                class="font-headline text-on-surface text-5xl font-extrabold tracking-tight"
+                            >
+                                <span class="text-primary">Parqueo</span>
+                                transparente, sin complicaciones.
+                            </h3>
+                            <p class="text-on-surface-variant max-w-xl text-lg">
+                                Tarifas actualizadas al instante, con descuentos
+                                automáticos y planes flexibles para cada
+                                trayecto. Sin cargos escondidos.
+                            </p>
+                        </div>
+                    </section>
+                    <!-- Pricing Breakdown & Calculator Bento Grid -->
+                    <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+                        <!-- 1. Standard Rates Breakdown -->
+                        <div
+                            class="bg-surface-container-lowest border-outline-variant/30 flex flex-col gap-8 rounded-3xl border p-8 shadow-sm lg:col-span-4"
+                        >
+                            <div>
+                                <h5
+                                    class="font-headline text-on-surface mb-6 text-xl font-bold"
+                                >
+                                    Tarifa estándar
+                                </h5>
+                                <div class="space-y-6">
+                                    <div class="flex items-end justify-between">
+                                        <div>
+                                            <p
+                                                class="text-outline mb-1 text-xs font-semibold tracking-widest uppercase"
+                                            >
+                                                Acceso Inicial
+                                            </p>
+                                            <p
+                                                class="font-headline text-on-surface text-3xl font-bold"
+                                            >
+                                                Primera Hora
+                                            </p>
+                                        </div>
+                                        <p
+                                            class="text-tertiary font-headline text-3xl font-bold"
+                                        >
+                                            $100.00
+                                        </p>
+                                    </div>
+                                    <div class="flex items-end justify-between">
+                                        <div>
+                                            <p
+                                                class="text-outline mb-1 text-xs font-semibold tracking-widest uppercase"
+                                            >
+                                                Incremento
+                                            </p>
+                                            <p
+                                                class="font-headline text-on-surface text-3xl font-bold"
+                                            >
+                                                Adicional
+                                            </p>
+                                        </div>
+                                        <p
+                                            class="text-on-surface font-headline text-3xl font-bold"
+                                        >
+                                            $70.00<span
+                                                class="text-outline text-sm font-medium"
+                                                >/hr</span
+                                            >
+                                        </p>
+                                    </div>
+                                    <div class="flex items-end justify-between">
+                                        <div>
+                                            <p
+                                                class="text-outline mb-1 text-xs font-semibold tracking-widest uppercase"
+                                            >
+                                                Tarifa máxima diaria
+                                            </p>
+                                            <p
+                                                class="font-headline text-on-surface text-3xl font-bold"
+                                            >
+                                                Día Completo
+                                            </p>
+                                        </div>
+                                        <p
+                                            class="text-on-surface font-headline text-3xl font-bold"
+                                        >
+                                            $5,000.00
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-tertiary-container/20 mt-auto flex items-center gap-4 rounded-2xl p-5"
+                            >
+                                <div
+                                    class="bg-tertiary-container flex h-10 w-10 items-center justify-center rounded-lg"
+                                >
+                                    <span
+                                        class="material-symbols-outlined text-on-tertiary-container"
+                                        style="
+                                            font-variation-settings: 'FILL' 1;
+                                        "
+                                        >electric_car</span
+                                    >
+                                </div>
+                                <div>
+                                    <p
+                                        class="text-on-tertiary-container text-xs font-bold"
+                                    >
+                                        Beneficio de carga eléctrica
+                                    </p>
+                                    <p
+                                        class="text-on-tertiary-container/70 text-xs"
+                                    >
+                                        Cobro único de $200 por carga nocturna
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 2. Price Calculator Tool -->
+                        <div
+                            class="bg-surface-container-lowest border-outline-variant/30 relative overflow-hidden rounded-3xl border p-8 shadow-sm lg:col-span-8"
+                        >
+                            <div
+                                class="bg-primary/5 absolute top-0 right-0 -mt-32 -mr-32 h-64 w-64 rounded-full blur-3xl"
+                            ></div>
+                            <div class="relative z-10 flex h-full flex-col">
+                                <div
+                                    class="mb-8 flex items-center justify-between"
+                                >
+                                    <div>
+                                        <h5
+                                            class="font-headline text-on-surface text-xl font-bold"
+                                        >
+                                            Calculadora de precios
+                                        </h5>
+                                        <p class="text-outline text-sm">
+                                            Estima tus costos de estacionamiento
+                                            al instante
+                                        </p>
+                                    </div>
+                                    <span
+                                        class="material-symbols-outlined text-primary"
+                                        >calculate</span
+                                    >
+                                </div>
+                                <div
+                                    class="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2"
+                                >
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label
+                                                class="text-outline mb-2 block text-xs font-bold tracking-widest uppercase"
+                                                >Ubicación</label
+                                            >
+                                            <select
+                                                class="bg-surface-container border-outline-variant/20 focus:ring-primary text-on-surface w-full appearance-none rounded-xl border px-4 py-3 text-sm focus:ring-2"
+                                            >
+                                                <option>Downtown Center</option>
+                                                <option>Plaza Central</option>
+                                                <option>
+                                                    Aeropuerto Internacional de
+                                                    las Américas
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="text-outline mb-2 block text-xs font-bold tracking-widest uppercase"
+                                                >Duración (Horas)</label
+                                            >
+                                            <input
+                                                class="accent-primary bg-surface-container h-2 w-full cursor-pointer appearance-none rounded-lg"
+                                                type="range"
+                                            />
+                                            <div
+                                                class="text-outline mt-2 flex justify-between text-xs"
+                                            >
+                                                <span>1hr</span>
+                                                <span>12hrs</span>
+                                                <span>24hrs+</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="bg-surface-container-low border-outline-variant/10 flex flex-col items-center justify-center rounded-2xl border p-6 text-center"
+                                    >
+                                        <p
+                                            class="text-outline mb-2 text-xs font-bold tracking-widest uppercase"
+                                        >
+                                            Costo estimado
+                                        </p>
+                                        <div class="flex items-baseline gap-1">
+                                            <span
+                                                class="font-headline text-outline text-2xl font-bold"
+                                                >$</span
+                                            >
+                                            <span
+                                                class="font-headline text-on-surface text-6xl font-black"
+                                                >140.00</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-auto">
+                                    <button
+                                        class="kinetic-gradient hover:shadow-primary/20 flex w-full items-center justify-center gap-2 rounded-xl py-4 font-bold text-white transition-all hover:shadow-lg"
+                                    >
+                                        <span class="material-symbols-outlined"
+                                            >bolt</span
+                                        >
+                                        Reserva esta tarifa ahora
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- FAB -->
+                <button
+                    class="bg-primary text-on-primary group fixed right-12 bottom-12 z-[60] flex h-[56px] items-center gap-3 rounded-xl px-8 shadow-2xl transition-all hover:scale-105"
+                >
+                    <span
+                        class="material-symbols-outlined font-bold transition-transform group-hover:rotate-90"
+                        >add</span
+                    >
+                    <span class="font-headline font-bold"
+                        >Nueva reservación</span
+                    >
+                </button>
+            </main>
         </div>
-      </aside>
-      <main class="bg-surface flex-1 overflow-y-auto">
-        <!-- Content Area -->
-        <div class="mx-auto w-full max-w-7xl space-y-8 p-10">
-          <!-- Hero Header -->
-          <section class="grid grid-cols-1 gap-8 md:grid-cols-3">
-            <div class="space-y-4 md:col-span-2">
-              <h3 class="font-headline text-on-surface text-5xl font-extrabold tracking-tight"><span class="text-primary">Parqueo</span> transparente, sin complicaciones.</h3>
-              <p class="text-on-surface-variant max-w-xl text-lg">Tarifas actualizadas al instante, con descuentos automáticos y planes flexibles para cada trayecto. Sin cargos escondidos.</p>
-            </div>
-          </section>
-          <!-- Pricing Breakdown & Calculator Bento Grid -->
-          <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
-            <!-- 1. Standard Rates Breakdown -->
-            <div class="bg-surface-container-lowest border-outline-variant/30 flex flex-col gap-8 rounded-3xl border p-8 shadow-sm lg:col-span-4">
-              <div>
-                <h5 class="font-headline text-on-surface mb-6 text-xl font-bold">Tarifa estándar</h5>
-                <div class="space-y-6">
-                  <div class="flex items-end justify-between">
-                    <div>
-                      <p class="text-outline mb-1 text-xs font-semibold tracking-widest uppercase">Acceso Inicial</p>
-                      <p class="font-headline text-on-surface text-3xl font-bold">Primera Hora</p>
-                    </div>
-                    <p class="text-tertiary font-headline text-3xl font-bold">$100.00</p>
-                  </div>
-                  <div class="flex items-end justify-between">
-                    <div>
-                      <p class="text-outline mb-1 text-xs font-semibold tracking-widest uppercase">Incremento</p>
-                      <p class="font-headline text-on-surface text-3xl font-bold">Adicional</p>
-                    </div>
-                    <p class="text-on-surface font-headline text-3xl font-bold">$70.00<span class="text-outline text-sm font-medium">/hr</span></p>
-                  </div>
-                  <div class="flex items-end justify-between">
-                    <div>
-                      <p class="text-outline mb-1 text-xs font-semibold tracking-widest uppercase">Tarifa máxima diaria</p>
-                      <p class="font-headline text-on-surface text-3xl font-bold">Día Completo</p>
-                    </div>
-                    <p class="text-on-surface font-headline text-3xl font-bold">$5,000.00</p>
-                  </div>
-                </div>
-              </div>
-              <div class="bg-tertiary-container/20 mt-auto flex items-center gap-4 rounded-2xl p-5">
-                <div class="bg-tertiary-container flex h-10 w-10 items-center justify-center rounded-lg">
-                  <span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: &quot;FILL&quot; 1">electric_car</span>
-                </div>
-                <div>
-                  <p class="text-on-tertiary-container text-xs font-bold">Beneficio de carga eléctrica</p>
-                  <p class="text-on-tertiary-container/70 text-xs">Cobro único de $200 por carga nocturna</p>
-                </div>
-              </div>
-            </div>
-            <!-- 2. Price Calculator Tool -->
-            <div class="bg-surface-container-lowest border-outline-variant/30 relative overflow-hidden rounded-3xl border p-8 shadow-sm lg:col-span-8">
-              <div class="bg-primary/5 absolute top-0 right-0 -mt-32 -mr-32 h-64 w-64 rounded-full blur-3xl"></div>
-              <div class="relative z-10 flex h-full flex-col">
-                <div class="mb-8 flex items-center justify-between">
-                  <div>
-                    <h5 class="font-headline text-on-surface text-xl font-bold">Calculadora de precios</h5>
-                    <p class="text-outline text-sm">Estima tus costos de estacionamiento al instante</p>
-                  </div>
-                  <span class="material-symbols-outlined text-primary">calculate</span>
-                </div>
-                <div class="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
-                  <div class="space-y-4">
-                    <div>
-                      <label class="text-outline mb-2 block text-xs font-bold tracking-widest uppercase">Ubicación</label>
-                      <select class="bg-surface-container border-outline-variant/20 focus:ring-primary text-on-surface w-full appearance-none rounded-xl border px-4 py-3 text-sm focus:ring-2">
-                        <option>Downtown Center</option>
-                        <option>Plaza Central</option>
-                        <option>Aeropuerto Internacional de las Américas</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="text-outline mb-2 block text-xs font-bold tracking-widest uppercase">Duración (Horas)</label>
-                      <input class="accent-primary bg-surface-container h-2 w-full cursor-pointer appearance-none rounded-lg" type="range" />
-                      <div class="text-outline mt-2 flex justify-between text-xs">
-                        <span>1hr</span>
-                        <span>12hrs</span>
-                        <span>24hrs+</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="bg-surface-container-low border-outline-variant/10 flex flex-col items-center justify-center rounded-2xl border p-6 text-center">
-                    <p class="text-outline mb-2 text-xs font-bold tracking-widest uppercase">Costo estimado</p>
-                    <div class="flex items-baseline gap-1">
-                      <span class="font-headline text-outline text-2xl font-bold">$</span>
-                      <span class="font-headline text-on-surface text-6xl font-black">140.00</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="mt-auto">
-                  <button class="kinetic-gradient hover:shadow-primary/20 flex w-full items-center justify-center gap-2 rounded-xl py-4 font-bold text-white transition-all hover:shadow-lg">
-                    <span class="material-symbols-outlined">bolt</span>
-                    Reserva esta tarifa ahora
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- FAB -->
-        <button class="bg-primary text-on-primary group fixed right-12 bottom-12 z-[60] flex h-[56px] items-center gap-3 rounded-xl px-8 shadow-2xl transition-all hover:scale-105">
-          <span class="material-symbols-outlined font-bold transition-transform group-hover:rotate-90">add</span>
-          <span class="font-headline font-bold">Nueva reservación</span>
-        </button>
-      </main>
-    </div>
-  </body>
+    </body>
 </html>

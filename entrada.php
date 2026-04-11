@@ -2,20 +2,22 @@
 require_once 'functions.php';
 require_login();
 
-$mensaje = "";
+$mensaje = '';
 
 // Lógica de registro de entrada
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $placa = $_POST['placa'];
     $tipo_tarifa = $_POST['tipo_tarifa'];
-    
-    $stmt = $mysqli->prepare("INSERT INTO movimientos (placa, hora_entrada, estado) VALUES (?, NOW(), 'EN_PARQUEO')");
-    $stmt->bind_param("s", $placa);
-    
+
+    $stmt = $mysqli->prepare(
+        "INSERT INTO movimientos (placa, hora_entrada, estado) VALUES (?, NOW(), 'EN_PARQUEO')",
+    );
+    $stmt->bind_param('s', $placa);
+
     if ($stmt->execute()) {
-        $mensaje = "Entrada registrada con éxito para la placa: " . $placa;
+        $mensaje = 'Entrada registrada con éxito para la placa: ' . $placa;
     } else {
-        $mensaje = "Error al registrar: " . $mysqli->error;
+        $mensaje = 'Error al registrar: ' . $mysqli->error;
     }
 }
 ?>
@@ -47,8 +49,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="flex">
         <aside class="w-20 lg:w-64 bg-white min-h-screen border-r border-outline-variant/30 flex flex-col">
             <div class="p-6 flex items-center gap-3">
-                <div class="bg-primary w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold">P</div>
-                <a class="font-bold text-xl hidden lg:block text-primary" href="menu.php">ParkControl</a>
+                <div class="bg-primary w-10 h-10 rounded-xl flex items-center justify-center text-white">
+                    <a class="material-symbols-outlined" href="menu.php">local_parking</a>
+                </div>
+                    <a class="font-headline font-bold text-xl hidden lg:block" href="menu.php">ParkControl</a>
             </div>
             <nav class="flex-1 mt-4 px-3 space-y-2">
                 <a href="menu.php" class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-gray-100 rounded-xl">
