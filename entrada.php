@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <aside class="w-20 lg:w-64 bg-white min-h-screen border-r border-outline-variant/30 flex flex-col">
             <div class="p-6 flex items-center gap-3">
                 <div class="bg-primary w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold">P</div>
-                <span class="font-bold text-xl hidden lg:block">ParkControl</span>
+                <a class="font-bold text-xl hidden lg:block text-primary" href="menu.php">ParkControl</a>
             </div>
             <nav class="flex-1 mt-4 px-3 space-y-2">
                 <a href="menu.php" class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-gray-100 rounded-xl">
@@ -62,6 +62,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <a href="salida.php" class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-gray-100 rounded-xl">
                     <span class="material-symbols-outlined">logout</span>
                     <span class="hidden lg:block">Registrar Salida</span>
+                </a>
+                <a href="logout.php" class="flex items-center gap-4 p-3 text-red-600 hover:bg-red-50 rounded-xl transition-all mt-10">
+                    <span class="material-symbols-outlined">power_settings_new</span>
+                    <span class="hidden lg:block">Cerrar Sesión</span>
                 </a>
             </nav>
         </aside>
