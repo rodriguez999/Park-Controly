@@ -54,6 +54,22 @@ return false;
 }
 
 /* ----------------------------------------------------
+REGISTRAR USUARIO
+---------------------------------------------------- */
+function register_user($mysqli, $username, $nombre, $password, $rol = 'admin') {
+    // Generar hash seguro
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+
+    $stmt = $mysqli->prepare("
+        INSERT INTO usuarios (username, nombre, password_hash, rol)
+        VALUES (?, ?, ?, ?)
+    ");
+    $stmt->bind_param("ssss", $username, $nombre, $hash, $rol);
+
+    return $stmt->execute();
+}
+
+/* ----------------------------------------------------
 CERRAR SESIÓN
 ---------------------------------------------------- */
 function logout() {

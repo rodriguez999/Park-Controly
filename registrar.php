@@ -1,25 +1,24 @@
 <?php
-// ©️Bryan Rodriguez Abad - 100523553
 require_once 'functions.php';
 
-// Si ya está logueado, mandarlo al menú
-if(is_logged_in()) { 
-    header('Location:menu.php'); 
-    exit; 
-}
-
 $err = '';
+$msg = '';
 
-// Procesar el formulario cuando se hace POST
 if($_POST) {
-    $u = trim($_POST['usuario']);
-    $p = $_POST['clave'];
-    
-    if(login_user($mysqli, $u, $p)) {
-        header('Location:menu.php'); 
-        exit;
-    } else { 
-        $err = 'Usuario o contraseña incorrectos.';
+    $username  = trim($_POST['username']);
+    $nombre    = trim($_POST['nombre']);
+    $password  = $_POST['password'];
+    $password2 = $_POST['password2'];
+
+    if($password !== $password2) {
+        $err = 'Las contraseñas no coinciden.';
+    } else {
+        // Usamos la función de functions.php
+        if(register_user($mysqli, $username, $nombre, $password)) {
+            $msg = 'Usuario registrado correctamente. Ahora puedes iniciar sesión.';
+        } else {
+            $err = 'Error al registrar usuario. Puede que el nombre de usuario ya exista.';
+        }
     }
 }
 ?>
@@ -28,7 +27,7 @@ if($_POST) {
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>ParkControl - Login</title>
+    <title>ParkControl - Registrar</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
       tailwind.config = {
@@ -90,44 +89,43 @@ if($_POST) {
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
               </div>
-              <h2 class="text-2xl font-bold text-gray-900">Iniciar Sesión</h2>
-              
-              <?php if($err): ?>
-                <div class="mt-4 p-3 bg-red-100 border-l-4 border-red-500 text-red-700 text-sm">
-                    <?php echo $err; ?>
+        <h2 class="text-2xl font-bold mb-6 text-center">Registrarse</h2>
                 </div>
-              <?php endif; ?>
-            </div>
+    <?php if($err): ?>
+      <div class="mb-4 p-3 bg-red-100 border-l-4 border-red-500 text-red-700 text-sm">
+        <?php echo $err; ?>
+      </div>
+    <?php endif; ?>
 
-            <form action="index.php" method="POST" class="space-y-6">
-              <div>
-                <label class="block text-sm font-medium text-gray-700" for="usuario">Usuario</label>
-                <div class="mt-1 relative">
-                  <input class="block w-full pl-4 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all text-sm" 
-                         id="usuario" name="usuario" placeholder="Nombre de usuario" required type="text" />
-                </div>
-              </div>
+    <?php if($msg): ?>
+      <div class="mb-4 p-3 bg-green-100 border-l-4 border-green-500 text-green-700 text-sm">
+        <?php echo $msg; ?>
+      </div>
+    <?php endif; ?>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700" for="clave">Contraseña</label>
-                <div class="mt-1 relative">
-                  <input class="block w-full pl-4 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all text-sm" 
-                         id="clave" name="clave" placeholder="••••••••" required type="password" />
-                </div>
-              </div>
+    <form action="registrar.php" method="POST" class="space-y-4">
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700">Usuario</label>
+        <input type="text" name="username" id="username" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2">
+      </div>
+      <div>
+        <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre completo</label>
+        <input type="text" name="nombre" id="nombre" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2">
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+        <input type="password" name="password" id="password" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2">
+      </div>
+      <div>
+        <label for="password2" class="block text-sm font-medium text-gray-700">Confirmar Contraseña</label>
+        <input type="password" name="password2" id="password2" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2">
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Registrarse</button>
+    </form>
 
-              <div>
-                <button class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none transition-all uppercase tracking-wider" type="submit">
-                  Ingresar
-                </button>
-                <p class="mt-4 text-center text-sm">
-                  ¿No tienes cuenta? <a href="registrar.php" class="text-blue-600 hover:underline">Regístrate aquí</a>
-                </p>
-              </div>
-            </form>
-          </div>
-        </div>
-      </section>
-    </main>
-  </body>
+    <p class="mt-4 text-center text-sm">
+      ¿Ya tienes cuenta? <a href="index.php" class="text-blue-600 hover:underline">Inicia sesión</a>
+    </p>
+  </div>
+</body>
 </html>
