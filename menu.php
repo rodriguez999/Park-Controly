@@ -8,11 +8,15 @@ $user_id = $_SESSION['user']['id'];
 $user_name = $_SESSION['user']['nombre'];
 
 // Consulta para estadísticas rápidas (Ejemplo: Vehículos actualmente en parqueo)
-$res_activos = $mysqli->query("SELECT COUNT(*) as total FROM movimientos WHERE estado = 'EN_PARQUEO'");
+$res_activos = $mysqli->query(
+    "SELECT COUNT(*) as total FROM movimientos WHERE estado = 'EN_PARQUEO'",
+);
 $total_activos = $res_activos->fetch_assoc()['total'];
 
 // Consulta para el historial reciente
-$res_historial = $mysqli->query("SELECT * FROM movimientos ORDER BY hora_entrada DESC LIMIT 3");
+$res_historial = $mysqli->query(
+    'SELECT * FROM movimientos ORDER BY hora_entrada DESC LIMIT 3',
+);
 ?>
 <!doctype html>
 <html class="light" lang="es">
@@ -49,7 +53,7 @@ $res_historial = $mysqli->query("SELECT * FROM movimientos ORDER BY hora_entrada
       <aside class="w-20 lg:w-64 bg-white min-h-screen border-r border-outline-variant/30 flex flex-col transition-all">
         <div class="p-6 flex items-center gap-3">
           <div class="bg-primary w-10 h-10 rounded-xl flex items-center justify-center text-white">
-            <span class="material-symbols-outlined">local_parking</span>
+            <a class="material-symbols-outlined" href="menu.php">local_parking</a>
           </div>
           <a class="font-headline font-bold text-xl hidden lg:block" href="menu.php">ParkControl</a>
         </div>
@@ -135,12 +139,20 @@ $res_historial = $mysqli->query("SELECT * FROM movimientos ORDER BY hora_entrada
                 </tr>
               </thead>
               <tbody class="divide-y divide-outline-variant/10">
-                <?php while($row = $res_historial->fetch_assoc()): ?>
+                <?php while ($row = $res_historial->fetch_assoc()): ?>
                 <tr class="hover:bg-gray-50 transition-colors">
-                  <td class="px-6 py-4 font-bold text-primary"><?php echo $row['placa']; ?></td>
-                  <td class="px-6 py-4 text-sm"><?php echo $row['hora_entrada']; ?></td>
+                  <td class="px-6 py-4 font-bold text-primary"><?php echo $row[
+                      'placa'
+                  ]; ?></td>
+                  <td class="px-6 py-4 text-sm"><?php echo $row[
+                      'hora_entrada'
+                  ]; ?></td>
                   <td class="px-6 py-4">
-                    <span class="px-3 py-1 rounded-full text-[10px] font-bold <?php echo $row['estado'] == 'EN_PARQUEO' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'; ?>">
+                    <span class="px-3 py-1 rounded-full text-[10px] font-bold <?php echo $row[
+                        'estado'
+                    ] == 'EN_PARQUEO'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-600'; ?>">
                       <?php echo $row['estado']; ?>
                     </span>
                   </td>

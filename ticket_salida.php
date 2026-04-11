@@ -6,11 +6,13 @@ require_login();
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 // Consultamos los datos del movimiento finalizado
-$res = $mysqli->query("SELECT * FROM movimientos WHERE id = $id AND estado = 'FINALIZADO'");
+$res = $mysqli->query(
+    "SELECT * FROM movimientos WHERE id = $id AND estado = 'FINALIZADO'",
+);
 $data = $res->fetch_assoc();
 
 if (!$data) {
-    die("Recibo no encontrado o el vehículo aún no ha registrado salida.");
+    die('Recibo no encontrado o el vehículo aún no ha registrado salida.');
 }
 ?>
 
@@ -35,12 +37,21 @@ if (!$data) {
     </div>
     <hr>
     <p><span class="bold">ID:</span> <?php echo $data['id']; ?></p>
-    <p><span class="bold">PLACA:</span> <?php echo strtoupper($data['placa']); ?></p>
-    <p><span class="bold">ENTRADA:</span> <?php echo $data['hora_entrada']; ?></p>
-    <p><span class="bold">SALIDA:</span>  <?php echo $data['hora_salida']; ?></p>
+    <p><span class="bold">PLACA:</span> <?php echo strtoupper(
+        $data['placa'],
+    ); ?></p>
+    <p><span class="bold">ENTRADA:</span> <?php echo $data[
+        'hora_entrada'
+    ]; ?></p>
+    <p><span class="bold">SALIDA:</span>  <?php echo $data[
+        'hora_salida'
+    ]; ?></p>
     <hr>
     <div class="center total">
-        <span class="bold">TOTAL PAGADO: RD$ <?php echo number_format($data['total_pago'], 2); ?></span>
+        <span class="bold">TOTAL PAGADO: RD$ <?php echo number_format(
+            $data['total_pago'],
+            2,
+        ); ?></span>
     </div>
     <hr>
     <div class="center footer">

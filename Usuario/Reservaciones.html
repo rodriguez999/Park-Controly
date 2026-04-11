@@ -1,430 +1,782 @@
 <!doctype html>
 
 <html class="light" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>ParkControl - Mis reservaciones</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link rel="icon" type="image/x-icon" href="../images/pc.ico" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "surface-dim": "#f1f3f9",
-              "on-tertiary": "#ffffff",
-              tertiary: "#006d4a",
-              "on-secondary-fixed": "#111c2d",
-              "on-error-container": "#410002",
-              "tertiary-container": "#6ffbbe",
-              "secondary-fixed": "#d8e3fb",
-              "on-tertiary-fixed-variant": "#005236",
-              "on-primary-fixed-variant": "#003baf",
-              "tertiary-fixed-dim": "#4edea3",
-              "surface-bright": "#fcf9ff",
-              "primary-fixed": "#0056d6",
-              background: "#f8f9fc",
-              "surface-container-high": "#ebeef5",
-              "on-secondary-fixed-variant": "#3c475a",
-              error: "#ba1a1a",
-              "on-primary": "#ffffff",
-              "on-tertiary-fixed": "#002113",
-              "inverse-primary": "#b6c4ff",
-              "on-secondary-container": "#111c2d",
-              "surface-variant": "#e1e2ec",
-              "surface-container-low": "#f3f4f9",
-              "secondary-container": "#d8e3fb",
-              "on-secondary": "#263143",
-              "secondary-fixed-dim": "#bcc7de",
-              "tertiary-fixed": "#6ffbbe",
-              "on-surface": "#191c20",
-              primary: "#2d5ad7",
-              "on-primary-container": "#00164f",
-              "outline-variant": "#c4c6d0",
-              surface: "#f8f9fc",
-              "primary-container": "#dbe0ff",
-              "on-tertiary-container": "#002113",
-              "surface-tint": "#2d5ad7",
-              "inverse-on-surface": "#f0f0f4",
-              "primary-fixed-dim": "#b6c4ff",
-              "on-surface-variant": "#44474e",
-              "surface-container-lowest": "#ffffff",
-              outline: "#74777f",
-              "surface-container-highest": "#e2e2e6",
-              "on-error": "#ffffff",
-              "inverse-surface": "#2e3034",
-              "on-background": "#191c20",
-              "surface-container": "#edeff4",
-              secondary: "#565e71",
-              "on-primary-fixed": "#00164f",
-              "error-container": "#ffdad6",
-            },
-            fontFamily: {
-              headline: ["Manrope"],
-              body: ["Inter"],
-              label: ["Inter"],
-            },
-            borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
-          },
-        },
-      };
-    </script>
-    <style>
-      .material-symbols-outlined {
-        font-variation-settings:
-          "FILL" 0,
-          "wght" 400,
-          "GRAD" 0,
-          "opsz" 24;
-        vertical-align: middle;
-      }
-      .glass-effect {
-        backdrop-filter: blur(16px);
-        background: rgba(255, 255, 255, 0.8);
-      }
-      .kinetic-gradient {
-        background: linear-gradient(135deg, #2d5ad7 0%, #0056d6 100%);
-      }
-      ::-webkit-scrollbar {
-        width: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #f8f9fc;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #c4c6d0;
-        border-radius: 10px;
-      }
-
-      /* Rail Transition Effects based on SCREEN_31 */
-      .sidebar-rail {
-        width: 80px;
-        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        overflow: hidden;
-      }
-      .sidebar-rail:hover {
-        width: 280px;
-      }
-      .nav-label {
-        opacity: 0;
-        white-space: nowrap;
-        transition: opacity 0.2s ease-in-out;
-        pointer-events: none;
-      }
-      .sidebar-rail:hover .nav-label {
-        opacity: 1;
-        pointer-events: auto;
-      }
-      .sidebar-rail:hover .sidebar-branding {
-        align-items: flex-start;
-        padding-left: 24px;
-      }
-      .sidebar-branding {
-        transition: all 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-      }
-    </style>
-  </head>
-  <body class="bg-background text-on-surface font-body selection:bg-primary/20 flex min-h-screen flex-col">
-    <!-- TopNavBar -->
-    <nav class="bg-surface/80 border-outline-variant/30 sticky top-0 z-50 flex h-20 items-center justify-between border-b px-8 backdrop-blur-xl">
-      <div class="flex items-center gap-12">
-        <a href="Index.html" class="font-headline text-primary text-2xl font-extrabold tracking-tight">ParkControl</a>
-        <div class="hidden items-center gap-8 md:flex">
-          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Index.html">Inicio</a>
-          <a class="text-primary font-bold" href="Reservaciones.html">Mis reservaciones</a>
-          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Vehiculos.html">Mis vehículos</a>
-          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Tarifas.html">Tarifas</a>
-          <a class="text-on-surface-variant hover:text-primary font-medium transition-colors" href="Historial.html">Historial</a>
-        </div>
-      </div>
-      <div class="flex items-center gap-6">
-        <div class="group relative">
-          <span class="material-symbols-outlined text-outline absolute top-1/2 left-4 -translate-y-1/2">search</span>
-          <input
-            class="bg-surface-container-highest/50 text-on-surface border-outline-variant/30 focus:ring-primary focus:bg-surface-container-highest placeholder:text-outline w-64 rounded-xl border py-2 pr-6 pl-12 text-sm transition-all focus:ring-2"
-            placeholder="Buscar parqueos…"
-            type="text"
-          />
-        </div>
-        <div class="flex items-center gap-4">
-          <button class="text-on-surface-variant hover:bg-surface-container relative rounded-lg p-2 transition-all">
-            <span class="material-symbols-outlined">notifications</span>
-          </button>
-          <button class="text-on-surface-variant hover:bg-surface-container rounded-lg p-2 transition-all">
-            <span class="material-symbols-outlined">help</span>
-          </button>
-        </div>
-        <img
-          alt="User Profile Avatar"
-          class="border-outline-variant/30 h-10 w-10 rounded-full border object-cover"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-1fzsWWPrkN1PiSLAn38cRBLTgrLspQO7SZaL872B2Rb-qBVvREG_eGGbYM5jEcKuiyVq67oam337dcXpsNtwzwU8C02sX_tAzKk2wDbib_DYp2CWbEyuTz57JhbmbdxyA-4B-TTwuvbjiluqwXdGQAMWWr3OOxJEtbSvZNkVKUynp3qNq8SVK6VSsbctmrTEYTI7pJFDp-_Fyun2O_Nm-ZlTkA_MSkRUb_e-vwzRe2qv06kFopxH3LxbQZP8k0MSONNA1HM-8Q"
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>ParkControl - Mis reservaciones</title>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+        <link rel="icon" type="image/x-icon" href="../images/pc.ico" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap"
+            rel="stylesheet"
         />
-      </div>
-    </nav>
-    <div class="flex flex-1 overflow-hidden">
-      <!-- SideNavBar Refined -->
-      <aside class="sidebar-rail bg-surface-container-low border-outline-variant/30 hidden flex-col gap-10 border-r py-8 lg:flex">
-        <div class="sidebar-branding px-2">
-          <div class="bg-primary mb-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
-            <span class="material-symbols-outlined text-on-primary text-2xl">local_parking</span>
-          </div>
-          <div class="nav-label flex flex-col gap-0.5">
-            <span class="font-headline text-on-surface text-lg font-bold">ParkControl</span>
-            <span class="font-label text-on-surface-variant text-[10px] tracking-[0.2em] uppercase">Portal de clientes</span>
-          </div>
-        </div>
-        <nav class="flex flex-col gap-3 px-4">
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Index.html">
-            <span class="material-symbols-outlined shrink-0">directions_car</span>
-            <span class="nav-label font-medium">Inicio</span>
-          </a>
-          <a class="bg-primary text-on-primary shadow-primary/20 flex items-center gap-6 rounded-xl px-3 py-3 shadow-lg" href="Reservaciones.html">
-            <span class="material-symbols-outlined shrink-0">calendar_today</span>
-            <span class="nav-label font-medium">Mis reservaciones</span>
-          </a>
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Vehiculos.html">
-            <span class="material-symbols-outlined shrink-0">minor_crash</span>
-            <span class="nav-label font-medium">Mis vehículos</span>
-          </a>
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="EncontrarParqueo.html">
-            <span class="material-symbols-outlined shrink-0">map</span>
-            <span class="nav-label text-sm font-medium">Encontrar parqueo</span>
-          </a>
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Tarifas.html">
-            <span class="material-symbols-outlined shrink-0">payments</span>
-            <span class="nav-label font-medium">Tarifas</span>
-          </a>
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="Historial.html">
-            <span class="material-symbols-outlined shrink-0">history</span>
-            <span class="nav-label font-medium">Historial</span>
-          </a>
-        </nav>
-        <div class="mt-auto flex flex-col gap-3 px-4">
-          <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="#">
-            <span class="material-symbols-outlined shrink-0">settings</span>
-            <span class="nav-label font-medium">Configuración</span>
-          </a>
-          <a class="text-error hover:bg-error-container/20 flex items-center gap-6 rounded-xl px-3 py-3 transition-all" href="#">
-            <span class="material-symbols-outlined shrink-0">logout</span>
-            <span class="nav-label font-medium">Cerrar sesión</span>
-          </a>
-        </div>
-      </aside>
-      <!-- Main Content -->
-      <main class="mx-auto w-full max-w-7xl flex-1 overflow-y-auto p-6 lg:p-10">
-        <header class="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <div>
-            <span class="font-label text-primary text-xs font-bold tracking-[0.2em] uppercase">Vista general de reservaciones</span>
-            <h1 class="font-headline text-on-surface mt-2 text-4xl font-extrabold tracking-tight lg:text-5xl">Tu espacio, <span class="text-primary">asegurado.</span></h1>
-          </div>
-          <div class="bg-surface-container-high border-outline-variant/30 flex items-center gap-2 rounded-xl border p-1">
-            <button class="bg-surface-container-lowest text-on-surface rounded-lg px-6 py-2 text-sm font-bold shadow-sm">Próximas</button>
-            <button class="hover:bg-surface-container-lowest/50 text-on-surface/60 hover:text-on-surface rounded-lg px-6 py-2 text-sm transition-all">Actividad pasada</button>
-          </div>
-        </header>
-        <!-- Bento Grid Layout -->
-        <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
-          <!-- Left Column -->
-          <div class="flex flex-col gap-6 lg:col-span-8">
-            <!-- Primary Active Card -->
-            <div class="group bg-surface-container-lowest border-outline-variant/40 relative flex flex-col gap-8 overflow-hidden rounded-[2rem] border p-8 transition-all hover:shadow-xl md:flex-row">
-              <div class="kinetic-gradient absolute top-0 left-0 h-full w-2"></div>
-              <div class="flex-1">
-                <div class="mb-4 flex items-center gap-3">
-                  <span class="bg-tertiary/10 text-tertiary rounded-full px-3 py-1 text-xs font-bold tracking-wider uppercase">Confirmado</span>
-                  <span class="text-outline text-xs">ID: PC-98231</span>
-                </div>
-                <h3 class="font-headline text-on-surface mb-1 text-2xl font-bold">Downtown Center</h3>
-                <p class="text-on-surface-variant mb-6 flex items-center gap-2 text-sm">
-                  <span class="material-symbols-outlined text-primary text-sm" data-icon="location_on">location_on</span>
-                  Avenida Núñez de Cáceres esquina Rómulo Betancourt, sector Bella Vista
-                </p>
-                <div class="mb-8 grid grid-cols-2 gap-6">
-                  <div class="bg-surface-container-low border-outline-variant/20 rounded-2xl border p-4">
-                    <span class="text-outline mb-1 block text-xs">Entrada</span>
-                    <p class="text-on-surface text-lg font-bold">Oct 2, 09:00 AM</p>
-                  </div>
-                  <div class="bg-surface-container-low border-outline-variant/20 rounded-2xl border p-4">
-                    <span class="text-outline mb-1 block text-xs">Salida</span>
-                    <p class="text-on-surface text-lg font-bold">Oct 2, 06:00 PM</p>
-                  </div>
-                </div>
-                <div class="flex flex-wrap gap-3">
-                  <button class="bg-primary shadow-primary/10 flex flex-1 items-center justify-center gap-2 rounded-xl px-6 py-3 font-bold text-white shadow-md transition-transform active:scale-95">
-                    <span class="material-symbols-outlined" data-icon="qr_code_2">qr_code_2</span>
-                    Mostrar código QR
-                  </button>
-                </div>
-              </div>
-              <div class="relative h-64 w-full overflow-hidden rounded-2xl md:h-auto md:w-64">
-                <img
-                  alt="Parking Garage Location"
-                  class="h-full w-full object-cover"
-                  data-alt="Modern well-lit underground parking facility with blue lines"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuADq2Eu-5fXFcoJhwk1MhSMQ8-7QmER9nx3zPLFgP3PM0ejv7REcjUBX8IY4SZ1f907CcFYoH9zKLq5DWsXfxii6pQ5oNhpxDBsbi4fejUG9X1A9Pynb-4-ITSGUALwLKVfPlXxDFiouc30jqqPr-5cRn4kVCVl2LqxO1NtCsjIFOcEnfi6ziQLwnpIPVn7iP_nv8dAmns-5IpPIn1NFfViN-LOZUoTE6N3lggM-6lxFZeg6ItUaxypry38SBQRv2rYDu204qns8Q"
-                />
-                <div class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/60 to-transparent p-4">
-                  <span class="text-xs text-white/80">Número de parqueo</span>
-                  <span class="font-headline text-3xl font-black text-white">A-22</span>
-                </div>
-              </div>
-            </div>
-            <!-- Secondary Items -->
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <!-- Upcoming Item 1 -->
-              <div class="bg-surface-container-lowest border-outline-variant/30 rounded-[1.5rem] border p-6 transition-all hover:shadow-lg">
-                <div class="mb-4 flex items-start justify-between">
-                  <div class="bg-secondary-container flex h-12 w-12 items-center justify-center rounded-xl">
-                    <span class="material-symbols-outlined text-primary" data-icon="event">event</span>
-                  </div>
-                  <span class="bg-surface-variant text-on-surface-variant rounded-md px-2 py-1 text-[10px] font-bold uppercase">Pendiente</span>
-                </div>
-                <h4 class="text-on-surface mb-1 text-lg font-bold">AILA T3</h4>
-                <p class="text-outline mb-4 text-sm">Oct 28 • 2:00 PM - 8:00 PM</p>
-                <div class="border-outline-variant/20 flex items-center justify-between border-t pt-4">
-                  <span class="text-primary font-bold">$600.00</span>
-                  <button class="text-on-surface-variant hover:text-primary flex items-center gap-1 text-sm font-semibold transition-colors">
-                    Detalles <span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
-                  </button>
-                </div>
-              </div>
-              <!-- Upcoming Item 2 -->
-              <div class="bg-surface-container-lowest border-outline-variant/30 rounded-[1.5rem] border p-6 transition-all hover:shadow-lg">
-                <div class="mb-4 flex items-start justify-between">
-                  <div class="bg-tertiary-container/20 flex h-12 w-12 items-center justify-center rounded-xl">
-                    <span class="material-symbols-outlined text-tertiary" data-icon="schedule">schedule</span>
-                  </div>
-                  <span class="bg-tertiary/10 text-tertiary rounded-md px-2 py-1 text-[10px] font-bold uppercase">Confirmada</span>
-                </div>
-                <h4 class="text-on-surface mb-1 text-lg font-bold">Parqueo del Downtown Center</h4>
-                <p class="text-outline mb-4 text-sm">Oct 18 • 06:00 PM - 11:30 PM</p>
-                <div class="border-outline-variant/20 flex items-center justify-between border-t pt-4">
-                  <span class="text-primary font-bold">$800.00</span>
-                  <button class="text-on-surface-variant hover:text-primary flex items-center gap-1 text-sm font-semibold transition-colors">
-                    Detalles <span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Right Column: New Reservation Form -->
-          <div class="sticky top-4 lg:col-span-4">
-            <div class="bg-surface-container-lowest border-outline-variant/40 relative overflow-hidden rounded-[2rem] border p-8 shadow-xl">
-              <div class="bg-primary/5 absolute -top-12 -right-12 h-32 w-32 rounded-full blur-3xl"></div>
-              <h2 class="font-headline text-on-surface mb-6 text-2xl font-bold">Nueva reservación</h2>
-              <form class="space-y-6">
-                <div>
-                  <label class="font-label text-outline mb-2 block text-xs tracking-widest uppercase">Ubicación</label>
-                  <div class="relative">
-                    <span class="material-symbols-outlined text-outline absolute top-3.5 left-4" data-icon="map">map</span>
-                    <select
-                      class="bg-surface-container-low border-outline-variant/30 text-on-surface focus:ring-primary/50 focus:border-primary w-full appearance-none rounded-xl border py-3.5 pr-4 pl-12 focus:ring-2"
+        <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+            rel="stylesheet"
+        />
+        <script id="tailwind-config">
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        colors: {
+                            'surface-dim': '#f1f3f9',
+                            'on-tertiary': '#ffffff',
+                            tertiary: '#006d4a',
+                            'on-secondary-fixed': '#111c2d',
+                            'on-error-container': '#410002',
+                            'tertiary-container': '#6ffbbe',
+                            'secondary-fixed': '#d8e3fb',
+                            'on-tertiary-fixed-variant': '#005236',
+                            'on-primary-fixed-variant': '#003baf',
+                            'tertiary-fixed-dim': '#4edea3',
+                            'surface-bright': '#fcf9ff',
+                            'primary-fixed': '#0056d6',
+                            background: '#f8f9fc',
+                            'surface-container-high': '#ebeef5',
+                            'on-secondary-fixed-variant': '#3c475a',
+                            error: '#ba1a1a',
+                            'on-primary': '#ffffff',
+                            'on-tertiary-fixed': '#002113',
+                            'inverse-primary': '#b6c4ff',
+                            'on-secondary-container': '#111c2d',
+                            'surface-variant': '#e1e2ec',
+                            'surface-container-low': '#f3f4f9',
+                            'secondary-container': '#d8e3fb',
+                            'on-secondary': '#263143',
+                            'secondary-fixed-dim': '#bcc7de',
+                            'tertiary-fixed': '#6ffbbe',
+                            'on-surface': '#191c20',
+                            primary: '#2d5ad7',
+                            'on-primary-container': '#00164f',
+                            'outline-variant': '#c4c6d0',
+                            surface: '#f8f9fc',
+                            'primary-container': '#dbe0ff',
+                            'on-tertiary-container': '#002113',
+                            'surface-tint': '#2d5ad7',
+                            'inverse-on-surface': '#f0f0f4',
+                            'primary-fixed-dim': '#b6c4ff',
+                            'on-surface-variant': '#44474e',
+                            'surface-container-lowest': '#ffffff',
+                            outline: '#74777f',
+                            'surface-container-highest': '#e2e2e6',
+                            'on-error': '#ffffff',
+                            'inverse-surface': '#2e3034',
+                            'on-background': '#191c20',
+                            'surface-container': '#edeff4',
+                            secondary: '#565e71',
+                            'on-primary-fixed': '#00164f',
+                            'error-container': '#ffdad6',
+                        },
+                        fontFamily: {
+                            headline: ['Manrope'],
+                            body: ['Inter'],
+                            label: ['Inter'],
+                        },
+                        borderRadius: {
+                            DEFAULT: '0.25rem',
+                            lg: '0.5rem',
+                            xl: '0.75rem',
+                            full: '9999px',
+                        },
+                    },
+                },
+            };
+        </script>
+        <style>
+            .material-symbols-outlined {
+                font-variation-settings:
+                    'FILL' 0,
+                    'wght' 400,
+                    'GRAD' 0,
+                    'opsz' 24;
+                vertical-align: middle;
+            }
+            .glass-effect {
+                backdrop-filter: blur(16px);
+                background: rgba(255, 255, 255, 0.8);
+            }
+            .kinetic-gradient {
+                background: linear-gradient(135deg, #2d5ad7 0%, #0056d6 100%);
+            }
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #f8f9fc;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #c4c6d0;
+                border-radius: 10px;
+            }
+
+            /* Rail Transition Effects based on SCREEN_31 */
+            .sidebar-rail {
+                width: 80px;
+                transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                overflow: hidden;
+            }
+            .sidebar-rail:hover {
+                width: 280px;
+            }
+            .nav-label {
+                opacity: 0;
+                white-space: nowrap;
+                transition: opacity 0.2s ease-in-out;
+                pointer-events: none;
+            }
+            .sidebar-rail:hover .nav-label {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .sidebar-rail:hover .sidebar-branding {
+                align-items: flex-start;
+                padding-left: 24px;
+            }
+            .sidebar-branding {
+                transition: all 0.3s ease;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body
+        class="bg-background text-on-surface font-body selection:bg-primary/20 flex min-h-screen flex-col"
+    >
+        <!-- TopNavBar -->
+        <nav
+            class="bg-surface/80 border-outline-variant/30 sticky top-0 z-50 flex h-20 items-center justify-between border-b px-8 backdrop-blur-xl"
+        >
+            <div class="flex items-center gap-12">
+                <a
+                    href="Index.html"
+                    class="font-headline text-primary text-2xl font-extrabold tracking-tight"
+                    >ParkControl</a
+                >
+                <div class="hidden items-center gap-8 md:flex">
+                    <a
+                        class="text-on-surface-variant hover:text-primary font-medium transition-colors"
+                        href="Index.html"
+                        >Inicio</a
                     >
-                      <option>Seleccione una zona de parqueo...</option>
-                      <option>Downtown Center</option>
-                      <option>Plaza Central</option>
-                      <option>Aeropuerto Internacional de las Américas</option>
-                    </select>
-                  </div>
+                    <a class="text-primary font-bold" href="Reservaciones.html"
+                        >Mis reservaciones</a
+                    >
+                    <a
+                        class="text-on-surface-variant hover:text-primary font-medium transition-colors"
+                        href="Vehiculos.html"
+                        >Mis vehículos</a
+                    >
+                    <a
+                        class="text-on-surface-variant hover:text-primary font-medium transition-colors"
+                        href="Tarifas.html"
+                        >Tarifas</a
+                    >
+                    <a
+                        class="text-on-surface-variant hover:text-primary font-medium transition-colors"
+                        href="Historial.html"
+                        >Historial</a
+                    >
                 </div>
-                <div class="grid grid-cols-1 gap-6">
-                  <div>
-                    <label class="font-label text-outline mb-2 block text-xs tracking-widest uppercase">Fecha</label>
-                    <div class="relative">
-                      <span class="material-symbols-outlined text-outline absolute top-3.5 left-4" data-icon="calendar_month">calendar_month</span>
-                      <input class="bg-surface-container-low border-outline-variant/30 text-on-surface focus:ring-primary/50 w-full rounded-xl border py-3.5 pr-4 pl-12 focus:ring-2" type="date" />
-                    </div>
-                  </div>
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <label class="font-label text-outline mb-2 block text-xs tracking-widest uppercase">Llegada</label>
-                      <input class="bg-surface-container-low border-outline-variant/30 text-on-surface focus:ring-primary/50 w-full rounded-xl border px-4 py-3.5 focus:ring-2" type="time" />
-                    </div>
-                    <div>
-                      <label class="font-label text-outline mb-2 block text-xs tracking-widest uppercase">Salida</label>
-                      <input class="bg-surface-container-low border-outline-variant/30 text-on-surface focus:ring-primary/50 w-full rounded-xl border px-4 py-3.5 focus:ring-2" type="time" />
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <label class="font-label text-outline mb-2 block text-xs tracking-widest uppercase">Vehículo</label>
-                  <div class="relative">
-                    <span class="material-symbols-outlined text-outline absolute top-3.5 left-4" data-icon="directions_car">directions_car</span>
-                    <select class="bg-surface-container-low border-outline-variant/30 text-on-surface focus:ring-primary/50 w-full appearance-none rounded-xl border py-3.5 pr-4 pl-12 focus:ring-2">
-                      <option>Toyota Corolla (ABC-1234)</option>
-                      <option>Honda Civic (PARK-001)</option>
-                      <option>Add new vehicle...</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="pt-4">
-                  <div class="mb-4 flex items-center justify-between px-2">
-                    <span class="text-outline text-sm">Total estimado</span>
-                    <span class="font-headline text-primary text-2xl font-black">$100.00</span>
-                  </div>
-                  <button
-                    class="kinetic-gradient shadow-primary/30 w-full rounded-xl py-4 text-lg font-black text-white shadow-lg transition-all hover:translate-y-[-2px] hover:shadow-xl active:translate-y-0"
-                    type="button"
-                  >
-                    Completar reservación
-                  </button>
-                  <p class="text-outline mt-4 text-center text-[10px] tracking-tighter uppercase">Confirmación inmediata garantizada</p>
-                </div>
-              </form>
             </div>
-          </div>
+            <div class="flex items-center gap-6">
+                <div class="group relative">
+                    <span
+                        class="material-symbols-outlined text-outline absolute top-1/2 left-4 -translate-y-1/2"
+                        >search</span
+                    >
+                    <input
+                        class="bg-surface-container-highest/50 text-on-surface border-outline-variant/30 focus:ring-primary focus:bg-surface-container-highest placeholder:text-outline w-64 rounded-xl border py-2 pr-6 pl-12 text-sm transition-all focus:ring-2"
+                        placeholder="Buscar parqueos…"
+                        type="text"
+                    />
+                </div>
+                <div class="flex items-center gap-4">
+                    <button
+                        class="text-on-surface-variant hover:bg-surface-container relative rounded-lg p-2 transition-all"
+                    >
+                        <span class="material-symbols-outlined"
+                            >notifications</span
+                        >
+                    </button>
+                    <button
+                        class="text-on-surface-variant hover:bg-surface-container rounded-lg p-2 transition-all"
+                    >
+                        <span class="material-symbols-outlined">help</span>
+                    </button>
+                </div>
+                <img
+                    alt="User Profile Avatar"
+                    class="border-outline-variant/30 h-10 w-10 rounded-full border object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-1fzsWWPrkN1PiSLAn38cRBLTgrLspQO7SZaL872B2Rb-qBVvREG_eGGbYM5jEcKuiyVq67oam337dcXpsNtwzwU8C02sX_tAzKk2wDbib_DYp2CWbEyuTz57JhbmbdxyA-4B-TTwuvbjiluqwXdGQAMWWr3OOxJEtbSvZNkVKUynp3qNq8SVK6VSsbctmrTEYTI7pJFDp-_Fyun2O_Nm-ZlTkA_MSkRUb_e-vwzRe2qv06kFopxH3LxbQZP8k0MSONNA1HM-8Q"
+                />
+            </div>
+        </nav>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- SideNavBar Refined -->
+            <aside
+                class="sidebar-rail bg-surface-container-low border-outline-variant/30 hidden flex-col gap-10 border-r py-8 lg:flex"
+            >
+                <div class="sidebar-branding px-2">
+                    <div
+                        class="bg-primary mb-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                    >
+                        <span
+                            class="material-symbols-outlined text-on-primary text-2xl"
+                            >local_parking</span
+                        >
+                    </div>
+                    <div class="nav-label flex flex-col gap-0.5">
+                        <span
+                            class="font-headline text-on-surface text-lg font-bold"
+                            >ParkControl</span
+                        >
+                        <span
+                            class="font-label text-on-surface-variant text-[10px] tracking-[0.2em] uppercase"
+                            >Portal de clientes</span
+                        >
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-3 px-4">
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="Index.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >directions_car</span
+                        >
+                        <span class="nav-label font-medium">Inicio</span>
+                    </a>
+                    <a
+                        class="bg-primary text-on-primary shadow-primary/20 flex items-center gap-6 rounded-xl px-3 py-3 shadow-lg"
+                        href="Reservaciones.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >calendar_today</span
+                        >
+                        <span class="nav-label font-medium"
+                            >Mis reservaciones</span
+                        >
+                    </a>
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="Vehiculos.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >minor_crash</span
+                        >
+                        <span class="nav-label font-medium">Mis vehículos</span>
+                    </a>
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="EncontrarParqueo.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >map</span
+                        >
+                        <span class="nav-label text-sm font-medium"
+                            >Encontrar parqueo</span
+                        >
+                    </a>
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="Tarifas.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >payments</span
+                        >
+                        <span class="nav-label font-medium">Tarifas</span>
+                    </a>
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="Historial.html"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >history</span
+                        >
+                        <span class="nav-label font-medium">Historial</span>
+                    </a>
+                </nav>
+                <div class="mt-auto flex flex-col gap-3 px-4">
+                    <a
+                        class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="#"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >settings</span
+                        >
+                        <span class="nav-label font-medium">Configuración</span>
+                    </a>
+                    <a
+                        class="text-error hover:bg-error-container/20 flex items-center gap-6 rounded-xl px-3 py-3 transition-all"
+                        href="#"
+                    >
+                        <span class="material-symbols-outlined shrink-0"
+                            >logout</span
+                        >
+                        <span class="nav-label font-medium">Cerrar sesión</span>
+                    </a>
+                </div>
+            </aside>
+            <!-- Main Content -->
+            <main
+                class="mx-auto w-full max-w-7xl flex-1 overflow-y-auto p-6 lg:p-10"
+            >
+                <header
+                    class="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end"
+                >
+                    <div>
+                        <span
+                            class="font-label text-primary text-xs font-bold tracking-[0.2em] uppercase"
+                            >Vista general de reservaciones</span
+                        >
+                        <h1
+                            class="font-headline text-on-surface mt-2 text-4xl font-extrabold tracking-tight lg:text-5xl"
+                        >
+                            Tu espacio,
+                            <span class="text-primary">asegurado.</span>
+                        </h1>
+                    </div>
+                    <div
+                        class="bg-surface-container-high border-outline-variant/30 flex items-center gap-2 rounded-xl border p-1"
+                    >
+                        <button
+                            class="bg-surface-container-lowest text-on-surface rounded-lg px-6 py-2 text-sm font-bold shadow-sm"
+                        >
+                            Próximas
+                        </button>
+                        <button
+                            class="hover:bg-surface-container-lowest/50 text-on-surface/60 hover:text-on-surface rounded-lg px-6 py-2 text-sm transition-all"
+                        >
+                            Actividad pasada
+                        </button>
+                    </div>
+                </header>
+                <!-- Bento Grid Layout -->
+                <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+                    <!-- Left Column -->
+                    <div class="flex flex-col gap-6 lg:col-span-8">
+                        <!-- Primary Active Card -->
+                        <div
+                            class="group bg-surface-container-lowest border-outline-variant/40 relative flex flex-col gap-8 overflow-hidden rounded-[2rem] border p-8 transition-all hover:shadow-xl md:flex-row"
+                        >
+                            <div
+                                class="kinetic-gradient absolute top-0 left-0 h-full w-2"
+                            ></div>
+                            <div class="flex-1">
+                                <div class="mb-4 flex items-center gap-3">
+                                    <span
+                                        class="bg-tertiary/10 text-tertiary rounded-full px-3 py-1 text-xs font-bold tracking-wider uppercase"
+                                        >Confirmado</span
+                                    >
+                                    <span class="text-outline text-xs"
+                                        >ID: PC-98231</span
+                                    >
+                                </div>
+                                <h3
+                                    class="font-headline text-on-surface mb-1 text-2xl font-bold"
+                                >
+                                    Downtown Center
+                                </h3>
+                                <p
+                                    class="text-on-surface-variant mb-6 flex items-center gap-2 text-sm"
+                                >
+                                    <span
+                                        class="material-symbols-outlined text-primary text-sm"
+                                        data-icon="location_on"
+                                        >location_on</span
+                                    >
+                                    Avenida Núñez de Cáceres esquina Rómulo
+                                    Betancourt, sector Bella Vista
+                                </p>
+                                <div class="mb-8 grid grid-cols-2 gap-6">
+                                    <div
+                                        class="bg-surface-container-low border-outline-variant/20 rounded-2xl border p-4"
+                                    >
+                                        <span
+                                            class="text-outline mb-1 block text-xs"
+                                            >Entrada</span
+                                        >
+                                        <p
+                                            class="text-on-surface text-lg font-bold"
+                                        >
+                                            Oct 2, 09:00 AM
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="bg-surface-container-low border-outline-variant/20 rounded-2xl border p-4"
+                                    >
+                                        <span
+                                            class="text-outline mb-1 block text-xs"
+                                            >Salida</span
+                                        >
+                                        <p
+                                            class="text-on-surface text-lg font-bold"
+                                        >
+                                            Oct 2, 06:00 PM
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-3">
+                                    <button
+                                        class="bg-primary shadow-primary/10 flex flex-1 items-center justify-center gap-2 rounded-xl px-6 py-3 font-bold text-white shadow-md transition-transform active:scale-95"
+                                    >
+                                        <span
+                                            class="material-symbols-outlined"
+                                            data-icon="qr_code_2"
+                                            >qr_code_2</span
+                                        >
+                                        Mostrar código QR
+                                    </button>
+                                </div>
+                            </div>
+                            <div
+                                class="relative h-64 w-full overflow-hidden rounded-2xl md:h-auto md:w-64"
+                            >
+                                <img
+                                    alt="Parking Garage Location"
+                                    class="h-full w-full object-cover"
+                                    data-alt="Modern well-lit underground parking facility with blue lines"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuADq2Eu-5fXFcoJhwk1MhSMQ8-7QmER9nx3zPLFgP3PM0ejv7REcjUBX8IY4SZ1f907CcFYoH9zKLq5DWsXfxii6pQ5oNhpxDBsbi4fejUG9X1A9Pynb-4-ITSGUALwLKVfPlXxDFiouc30jqqPr-5cRn4kVCVl2LqxO1NtCsjIFOcEnfi6ziQLwnpIPVn7iP_nv8dAmns-5IpPIn1NFfViN-LOZUoTE6N3lggM-6lxFZeg6ItUaxypry38SBQRv2rYDu204qns8Q"
+                                />
+                                <div
+                                    class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/60 to-transparent p-4"
+                                >
+                                    <span class="text-xs text-white/80"
+                                        >Número de parqueo</span
+                                    >
+                                    <span
+                                        class="font-headline text-3xl font-black text-white"
+                                        >A-22</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Secondary Items -->
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <!-- Upcoming Item 1 -->
+                            <div
+                                class="bg-surface-container-lowest border-outline-variant/30 rounded-[1.5rem] border p-6 transition-all hover:shadow-lg"
+                            >
+                                <div
+                                    class="mb-4 flex items-start justify-between"
+                                >
+                                    <div
+                                        class="bg-secondary-container flex h-12 w-12 items-center justify-center rounded-xl"
+                                    >
+                                        <span
+                                            class="material-symbols-outlined text-primary"
+                                            data-icon="event"
+                                            >event</span
+                                        >
+                                    </div>
+                                    <span
+                                        class="bg-surface-variant text-on-surface-variant rounded-md px-2 py-1 text-[10px] font-bold uppercase"
+                                        >Pendiente</span
+                                    >
+                                </div>
+                                <h4
+                                    class="text-on-surface mb-1 text-lg font-bold"
+                                >
+                                    AILA T3
+                                </h4>
+                                <p class="text-outline mb-4 text-sm">
+                                    Oct 28 • 2:00 PM - 8:00 PM
+                                </p>
+                                <div
+                                    class="border-outline-variant/20 flex items-center justify-between border-t pt-4"
+                                >
+                                    <span class="text-primary font-bold"
+                                        >$600.00</span
+                                    >
+                                    <button
+                                        class="text-on-surface-variant hover:text-primary flex items-center gap-1 text-sm font-semibold transition-colors"
+                                    >
+                                        Detalles
+                                        <span
+                                            class="material-symbols-outlined text-sm"
+                                            data-icon="chevron_right"
+                                            >chevron_right</span
+                                        >
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Upcoming Item 2 -->
+                            <div
+                                class="bg-surface-container-lowest border-outline-variant/30 rounded-[1.5rem] border p-6 transition-all hover:shadow-lg"
+                            >
+                                <div
+                                    class="mb-4 flex items-start justify-between"
+                                >
+                                    <div
+                                        class="bg-tertiary-container/20 flex h-12 w-12 items-center justify-center rounded-xl"
+                                    >
+                                        <span
+                                            class="material-symbols-outlined text-tertiary"
+                                            data-icon="schedule"
+                                            >schedule</span
+                                        >
+                                    </div>
+                                    <span
+                                        class="bg-tertiary/10 text-tertiary rounded-md px-2 py-1 text-[10px] font-bold uppercase"
+                                        >Confirmada</span
+                                    >
+                                </div>
+                                <h4
+                                    class="text-on-surface mb-1 text-lg font-bold"
+                                >
+                                    Parqueo del Downtown Center
+                                </h4>
+                                <p class="text-outline mb-4 text-sm">
+                                    Oct 18 • 06:00 PM - 11:30 PM
+                                </p>
+                                <div
+                                    class="border-outline-variant/20 flex items-center justify-between border-t pt-4"
+                                >
+                                    <span class="text-primary font-bold"
+                                        >$800.00</span
+                                    >
+                                    <button
+                                        class="text-on-surface-variant hover:text-primary flex items-center gap-1 text-sm font-semibold transition-colors"
+                                    >
+                                        Detalles
+                                        <span
+                                            class="material-symbols-outlined text-sm"
+                                            data-icon="chevron_right"
+                                            >chevron_right</span
+                                        >
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Column: New Reservation Form -->
+                    <div class="sticky top-4 lg:col-span-4">
+                        <div
+                            class="bg-surface-container-lowest border-outline-variant/40 relative overflow-hidden rounded-[2rem] border p-8 shadow-xl"
+                        >
+                            <div
+                                class="bg-primary/5 absolute -top-12 -right-12 h-32 w-32 rounded-full blur-3xl"
+                            ></div>
+                            <h2
+                                class="font-headline text-on-surface mb-6 text-2xl font-bold"
+                            >
+                                Nueva reservación
+                            </h2>
+                            <form class="space-y-6">
+                                <div>
+                                    <label
+                                        class="font-label text-outline mb-2 block text-xs tracking-widest uppercase"
+                                        >Ubicación</label
+                                    >
+                                    <div class="relative">
+                                        <span
+                                            class="material-symbols-outlined text-outline absolute top-3.5 left-4"
+                                            data-icon="map"
+                                            >map</span
+                                        >
+                                        <select
+                                            class="bg-surface-container-low border-outline-variant/30 text-on-surface focus:ring-primary/50 focus:border-primary w-full appearance-none rounded-xl border py-3.5 pr-4 pl-12 focus:ring-2"
+                                        >
+                                            <option>
+                                                Seleccione una zona de
+                                                parqueo...
+                                            </option>
+                                            <option>Downtown Center</option>
+                                            <option>Plaza Central</option>
+                                            <option>
+                                                Aeropuerto Internacional de las
+                                                Américas
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 gap-6">
+                                    <div>
+                                        <label
+                                            class="font-label text-outline mb-2 block text-xs tracking-widest uppercase"
+                                            >Fecha</label
+                                        >
+                                        <div class="relative">
+                                            <span
+                                                class="material-symbols-outlined text-outline absolute top-3.5 left-4"
+                                                data-icon="calendar_month"
+                                                >calendar_month</span
+                                            >
+                                            <input
+                                                class="bg-surface-container-low border-outline-variant/30 text-on-surface focus:ring-primary/50 w-full rounded-xl border py-3.5 pr-4 pl-12 focus:ring-2"
+                                                type="date"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label
+                                                class="font-label text-outline mb-2 block text-xs tracking-widest uppercase"
+                                                >Llegada</label
+                                            >
+                                            <input
+                                                class="bg-surface-container-low border-outline-variant/30 text-on-surface focus:ring-primary/50 w-full rounded-xl border px-4 py-3.5 focus:ring-2"
+                                                type="time"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="font-label text-outline mb-2 block text-xs tracking-widest uppercase"
+                                                >Salida</label
+                                            >
+                                            <input
+                                                class="bg-surface-container-low border-outline-variant/30 text-on-surface focus:ring-primary/50 w-full rounded-xl border px-4 py-3.5 focus:ring-2"
+                                                type="time"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label
+                                        class="font-label text-outline mb-2 block text-xs tracking-widest uppercase"
+                                        >Vehículo</label
+                                    >
+                                    <div class="relative">
+                                        <span
+                                            class="material-symbols-outlined text-outline absolute top-3.5 left-4"
+                                            data-icon="directions_car"
+                                            >directions_car</span
+                                        >
+                                        <select
+                                            class="bg-surface-container-low border-outline-variant/30 text-on-surface focus:ring-primary/50 w-full appearance-none rounded-xl border py-3.5 pr-4 pl-12 focus:ring-2"
+                                        >
+                                            <option>
+                                                Toyota Corolla (ABC-1234)
+                                            </option>
+                                            <option>
+                                                Honda Civic (PARK-001)
+                                            </option>
+                                            <option>Add new vehicle...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="pt-4">
+                                    <div
+                                        class="mb-4 flex items-center justify-between px-2"
+                                    >
+                                        <span class="text-outline text-sm"
+                                            >Total estimado</span
+                                        >
+                                        <span
+                                            class="font-headline text-primary text-2xl font-black"
+                                            >$100.00</span
+                                        >
+                                    </div>
+                                    <button
+                                        class="kinetic-gradient shadow-primary/30 w-full rounded-xl py-4 text-lg font-black text-white shadow-lg transition-all hover:translate-y-[-2px] hover:shadow-xl active:translate-y-0"
+                                        type="button"
+                                    >
+                                        Completar reservación
+                                    </button>
+                                    <p
+                                        class="text-outline mt-4 text-center text-[10px] tracking-tighter uppercase"
+                                    >
+                                        Confirmación inmediata garantizada
+                                    </p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- History Section -->
+                <section class="mt-20">
+                    <div class="mb-8 flex items-center justify-between">
+                        <h2
+                            class="font-headline text-on-surface text-2xl font-bold"
+                        >
+                            Historial
+                        </h2>
+                        <a
+                            class="text-primary text-sm font-bold hover:underline"
+                            href="Historial.html"
+                            >Ver toda</a
+                        >
+                    </div>
+                    <div class="space-y-4">
+                        <!-- History Row 1 -->
+                        <div
+                            class="bg-surface-container-lowest border-outline-variant/30 flex items-center gap-4 rounded-2xl border p-4 shadow-sm"
+                        >
+                            <div
+                                class="bg-surface-container-high text-primary flex h-12 w-12 items-center justify-center rounded-full"
+                            >
+                                <span
+                                    class="material-symbols-outlined"
+                                    data-icon="check_circle"
+                                    >check_circle</span
+                                >
+                            </div>
+                            <div class="flex-1">
+                                <h5 class="text-on-surface text-sm font-bold">
+                                    Parqueo Downtown Center
+                                </h5>
+                                <p class="text-outline text-xs">
+                                    Oct 12, 2025 • 4 hours
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-on-surface text-sm font-bold">
+                                    $400.00
+                                </p>
+                                <span
+                                    class="text-tertiary text-[10px] font-bold uppercase"
+                                    >Completada</span
+                                >
+                            </div>
+                        </div>
+                        <!-- History Row 2 -->
+                        <div
+                            class="bg-surface-container-lowest border-outline-variant/30 flex items-center gap-4 rounded-2xl border p-4 shadow-sm"
+                        >
+                            <div
+                                class="bg-surface-container-high text-primary flex h-12 w-12 items-center justify-center rounded-full"
+                            >
+                                <span
+                                    class="material-symbols-outlined"
+                                    data-icon="check_circle"
+                                    >check_circle</span
+                                >
+                            </div>
+                            <div class="flex-1">
+                                <h5 class="text-on-surface text-sm font-bold">
+                                    Plaza Central
+                                </h5>
+                                <p class="text-outline text-xs">
+                                    Oct 08, 2025 • 2 hours
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-on-surface text-sm font-bold">
+                                    $200.00
+                                </p>
+                                <span
+                                    class="text-tertiary text-[10px] font-bold uppercase"
+                                    >Completada</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
-        <!-- History Section -->
-        <section class="mt-20">
-          <div class="mb-8 flex items-center justify-between">
-            <h2 class="font-headline text-on-surface text-2xl font-bold">Historial</h2>
-            <a class="text-primary text-sm font-bold hover:underline" href="Historial.html">Ver toda</a>
-          </div>
-          <div class="space-y-4">
-            <!-- History Row 1 -->
-            <div class="bg-surface-container-lowest border-outline-variant/30 flex items-center gap-4 rounded-2xl border p-4 shadow-sm">
-              <div class="bg-surface-container-high text-primary flex h-12 w-12 items-center justify-center rounded-full">
-                <span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
-              </div>
-              <div class="flex-1">
-                <h5 class="text-on-surface text-sm font-bold">Parqueo Downtown Center</h5>
-                <p class="text-outline text-xs">Oct 12, 2025 • 4 hours</p>
-              </div>
-              <div class="text-right">
-                <p class="text-on-surface text-sm font-bold">$400.00</p>
-                <span class="text-tertiary text-[10px] font-bold uppercase">Completada</span>
-              </div>
-            </div>
-            <!-- History Row 2 -->
-            <div class="bg-surface-container-lowest border-outline-variant/30 flex items-center gap-4 rounded-2xl border p-4 shadow-sm">
-              <div class="bg-surface-container-high text-primary flex h-12 w-12 items-center justify-center rounded-full">
-                <span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
-              </div>
-              <div class="flex-1">
-                <h5 class="text-on-surface text-sm font-bold">Plaza Central</h5>
-                <p class="text-outline text-xs">Oct 08, 2025 • 2 hours</p>
-              </div>
-              <div class="text-right">
-                <p class="text-on-surface text-sm font-bold">$200.00</p>
-                <span class="text-tertiary text-[10px] font-bold uppercase">Completada</span>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
-    <!-- Extended FAB -->
-    <button class="bg-primary text-on-primary group fixed right-12 bottom-12 z-[60] flex h-[56px] items-center gap-3 rounded-xl px-8 shadow-2xl transition-all hover:scale-105">
-      <span class="material-symbols-outlined font-bold transition-transform group-hover:rotate-90">add</span>
-      <span class="font-headline font-bold">Nueva reservación</span>
-    </button>
-  </body>
+        <!-- Extended FAB -->
+        <button
+            class="bg-primary text-on-primary group fixed right-12 bottom-12 z-[60] flex h-[56px] items-center gap-3 rounded-xl px-8 shadow-2xl transition-all hover:scale-105"
+        >
+            <span
+                class="material-symbols-outlined font-bold transition-transform group-hover:rotate-90"
+                >add</span
+            >
+            <span class="font-headline font-bold">Nueva reservación</span>
+        </button>
+    </body>
 </html>
