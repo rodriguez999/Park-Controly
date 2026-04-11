@@ -51,7 +51,7 @@ $res_historial = $mysqli->query("SELECT * FROM movimientos ORDER BY hora_entrada
           <div class="bg-primary w-10 h-10 rounded-xl flex items-center justify-center text-white">
             <span class="material-symbols-outlined">local_parking</span>
           </div>
-          <span class="font-headline font-bold text-xl hidden lg:block">ParkControl</span>
+          <a class="font-headline font-bold text-xl hidden lg:block" href="menu.php">ParkControl</a>
         </div>
         
         <nav class="flex-1 mt-4 px-3 space-y-2">
