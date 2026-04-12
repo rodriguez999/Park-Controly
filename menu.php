@@ -84,13 +84,26 @@ $res_historial = $mysqli->query(
             <h1 class="font-headline text-2xl lg:text-3xl font-bold text-on-surface">Bienvenido, <?php echo $user_name; ?></h1>
             <p class="text-on-surface-variant">Panel de control administrativo</p>
           </div>
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-4 relative">
             <div class="text-right hidden sm:block">
               <p class="text-xs font-bold text-primary uppercase">Estado del Sistema</p>
               <p class="text-sm font-medium text-tertiary">En línea</p>
             </div>
-            <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+
+            <!-- Botón círculo -->
+            <button id="userMenuBtn" class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold focus:outline-none">
               <?php echo strtoupper(substr($user_name, 0, 1)); ?>
+            </button>
+
+            <!-- Menú desplegable -->
+            <div id="userMenu" class="hidden absolute right-0 top-14 w-48 bg-white shadow-lg rounded-lg border border-gray-200">
+              <ul class="py-2 text-sm text-gray-700">
+                <li><a href="perfil.php" class="block px-4 py-2 hover:bg-gray-100">Perfil</a></li>
+                <li><a href="parqueos.php" class="block px-4 py-2 hover:bg-gray-100">Estado de Parqueos</a></li>
+                <li><a href="reportes.php" class="block px-4 py-2 hover:bg-gray-100">Reportes</a></li>
+                <li><a href="configuracion.php" class="block px-4 py-2 hover:bg-gray-100">Configuración</a></li>
+                <li><a href="logout.php" class="block px-4 py-2 hover:bg-gray-100 text-red-600">Cerrar Sesión</a></li>
+              </ul>
             </div>
           </div>
         </header>
@@ -166,3 +179,19 @@ $res_historial = $mysqli->query(
     </div>
   </body>
 </html>
+
+<script>
+  const btn = document.getElementById('userMenuBtn');
+  const menu = document.getElementById('userMenu');
+
+  btn.addEventListener('click', () => {
+    menu.classList.toggle('hidden');
+  });
+
+  // Opcional: cerrar menú si se hace clic fuera
+  document.addEventListener('click', (e) => {
+    if (!btn.contains(e.target) && !menu.contains(e.target)) {
+      menu.classList.add('hidden');
+    }
+  });
+</script>
