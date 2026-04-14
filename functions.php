@@ -1,5 +1,14 @@
 <?php
+// 1. ESTABLECER ZONA HORARIA (Esto corrige el desfase de las 6 horas)
+date_default_timezone_set('America/Santo_Domingo');
+
 require_once 'config.php';
+
+// 2. AJUSTAR ZONA HORARIA EN MYSQL
+// Esto asegura que CURRENT_TIMESTAMP en la base de datos coincida con PHP
+if (isset($mysqli)) {
+    $mysqli->query("SET time_zone = '-04:00'");
+}
 
 /* ----------------------------------------------------
 VERIFICAR SESIÓN
@@ -17,13 +26,33 @@ function require_login()
     }
 }
 
+/**
+ * Verifica si el usuario logueado tiene el rol de administrador.
+ */
+function is_admin()
+{
+    return (isset($_SESSION['user']['rol']) && $_SESSION['user']['rol'] === 'admin');
+}
+
+/**
+ * Restringe el acceso solo a administradores.
+ */
+function require_admin()
+{
+    require_login();
+    if (!is_admin()) {
+        header('Location:menu.php?error=no_autorizado');
+        exit();
+    }
+}
+
 /* ----------------------------------------------------
 INICIAR SESIÓN
 ---------------------------------------------------- */
 function login_user($mysqli, $username, $password)
 {
     $stmt = $mysqli->prepare("
-        SELECT id, username, password_hash, nombre
+        SELECT id, username, password_hash, nombre, rol
         FROM usuarios
         WHERE username = ?
         LIMIT 1
@@ -36,18 +65,17 @@ function login_user($mysqli, $username, $password)
     $row = $res->fetch_assoc();
 
     if ($row) {
-        // Soporta SHA-256 o password_hash
         $sha256 = hash('sha256', $password);
 
         if (
             $sha256 === $row['password_hash'] ||
             password_verify($password, $row['password_hash'])
         ) {
-            // Guardar sesión segura
             $_SESSION['user'] = [
                 'id' => $row['id'],
                 'username' => $row['username'],
                 'nombre' => $row['nombre'],
+                'rol' => $row['rol'] 
             ];
             return true;
         }
@@ -59,9 +87,8 @@ function login_user($mysqli, $username, $password)
 /* ----------------------------------------------------
 REGISTRAR USUARIO
 ---------------------------------------------------- */
-function register_user($mysqli, $username, $nombre, $password, $rol = 'admin')
+function register_user($mysqli, $username, $nombre, $password, $rol = 'usuario')
 {
-    // Generar hash seguro
     $hash = password_hash($password, PASSWORD_DEFAULT);
 
     $stmt = $mysqli->prepare("
@@ -80,5 +107,24 @@ function logout()
 {
     session_unset();
     session_destroy();
+}
+
+/* ----------------------------------------------------
+CONFIGURACIÓN VISUAL GLOBAL (Tailwind)
+---------------------------------------------------- */
+function get_tailwind_config() {
+    return "
+    <script src='https://cdn.tailwindcss.com'></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#005ac1',
+                    }
+                }
+            }
+        }
+    </script>";
 }
 ?>

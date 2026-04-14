@@ -1,42 +1,44 @@
 <?php
 require_once 'functions.php';
-require_login(); // Si no está logueado, lo saca
+require_login();
 
-// Obtenemos datos del usuario logueado
-// Forma correcta de leer lo que guardaste en functions.php
-$user_id = $_SESSION['user']['id'];
-$user_name = $_SESSION['user']['nombre'];
+// Datos del usuario para el saludo
+$user = $_SESSION['user'];
+$user_name = $user['nombre'];
+$user_rol = $user['rol'] ?? 'usuario'; 
 
-// Consulta para estadísticas rápidas (Ejemplo: Vehículos actualmente en parqueo)
-$res_activos = $mysqli->query(
-    "SELECT COUNT(*) as total FROM movimientos WHERE estado = 'EN_PARQUEO'",
-);
+// 1. Obtener la configuración actual
+$config = get_config($mysqli);
+$capacidad_total = $config['capacidad_total'];
+
+// 2. Vehículos actualmente en el parqueo
+$res_activos = $mysqli->query("SELECT COUNT(*) as total FROM movimientos WHERE estado = 'EN_PARQUEO'");
 $total_activos = $res_activos->fetch_assoc()['total'];
 
-// Consulta para el historial reciente
-$res_historial = $mysqli->query(
-    'SELECT * FROM movimientos ORDER BY hora_entrada DESC LIMIT 3',
-);
+// 3. Calcular espacios disponibles
+$espacios_disponibles = $capacidad_total - $total_activos;
+
+// 4. Historial reciente (últimos 8 registros)
+$res_historial = $mysqli->query("SELECT * FROM movimientos ORDER BY hora_entrada DESC LIMIT 8");
 ?>
 <!doctype html>
 <html class="light" lang="es">
-  <head>
+<head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>ParkControl - Dashboard</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <script>
       tailwind.config = {
-        darkMode: 'class',
         theme: {
           extend: {
             colors: {
               'surface-dim': '#f1f3f9',
               'primary': '#005ac1',
               'on-surface': '#1a1c1e',
-              'on-surface-variant': '#43474e',
               'outline-variant': '#c3c7cf',
             }
           }
@@ -44,154 +46,207 @@ $res_historial = $mysqli->query(
       }
     </script>
     <style>
-      body { font-family: 'Inter', sans-serif; }
-      .font-headline { font-family: 'Manrope', sans-serif; }
-    </style>
-  </head>
-  <body class="bg-surface-dim min-h-screen">
-    <div class="flex">
-      <aside class="w-20 lg:w-64 bg-white min-h-screen border-r border-outline-variant/30 flex flex-col transition-all">
-        <div class="p-6 flex items-center gap-3">
-          <div class="bg-primary w-10 h-10 rounded-xl flex items-center justify-center text-white">
-            <a class="material-symbols-outlined" href="menu.php">local_parking</a>
-          </div>
-          <a class="font-headline font-bold text-xl hidden lg:block" href="menu.php">ParkControl</a>
-        </div>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .font-headline { font-family: 'Manrope', sans-serif; }
         
-        <nav class="flex-1 mt-4 px-3 space-y-2">
-          <a href="menu.php" class="flex items-center gap-4 p-3 bg-primary/10 text-primary rounded-xl font-semibold">
-            <span class="material-symbols-outlined">dashboard</span>
-            <span class="hidden lg:block">Dashboard</span>
-          </a>
-          <a href="entrada.php" class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-gray-100 rounded-xl transition-all">
-            <span class="material-symbols-outlined">login</span>
-            <span class="hidden lg:block">Registrar Entrada</span>
-          </a>
-          <a href="salida.php" class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-gray-100 rounded-xl transition-all">
-            <span class="material-symbols-outlined">logout</span>
-            <span class="hidden lg:block">Registrar Salida</span>
-          </a>
-          <a href="logout.php" class="flex items-center gap-4 p-3 text-red-600 hover:bg-red-50 rounded-xl transition-all mt-10">
-            <span class="material-symbols-outlined">power_settings_new</span>
-            <span class="hidden lg:block">Cerrar Sesión</span>
-          </a>
-        </nav>
-      </aside>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-      <main class="flex-1 p-4 lg:p-8">
-        <header class="flex justify-between items-center mb-8">
-          <div>
-            <h1 class="font-headline text-2xl lg:text-3xl font-bold text-on-surface">Bienvenido, <?php echo $user_name; ?></h1>
-            <p class="text-on-surface-variant">Panel de control administrativo</p>
-          </div>
-          <div class="flex items-center gap-4 relative">
-            <div class="text-right hidden sm:block">
-              <p class="text-xs font-bold text-primary uppercase">Estado del Sistema</p>
-              <p class="text-sm font-medium text-tertiary">En línea</p>
-            </div>
+        main { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
 
-            <!-- Botón círculo -->
-            <button id="userMenuBtn" class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold focus:outline-none">
-              <?php echo strtoupper(substr($user_name, 0, 1)); ?>
-            </button>
+        .sidebar-text { white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; }
+        aside:hover .sidebar-text { opacity: 1; visibility: visible; }
+        
+        .timer-font { font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace; }
+    </style>
+</head>
+<body class="bg-surface-dim min-h-screen">
 
-            <!-- Menú desplegable -->
-            <div id="userMenu" class="hidden absolute right-0 top-14 w-48 bg-white shadow-lg rounded-lg border border-gray-200">
-              <ul class="py-2 text-sm text-gray-700">
-                <li><a href="perfil.php" class="block px-4 py-2 hover:bg-gray-100">Perfil</a></li>
-                <li><a href="parqueos.php" class="block px-4 py-2 hover:bg-gray-100">Estado de Parqueos</a></li>
-                <li><a href="reportes.php" class="block px-4 py-2 hover:bg-gray-100">Reportes</a></li>
-                <li><a href="configuracion.php" class="block px-4 py-2 hover:bg-gray-100">Configuración</a></li>
-                <li><a href="logout.php" class="block px-4 py-2 hover:bg-gray-100 text-red-600">Cerrar Sesión</a></li>
-              </ul>
-            </div>
-          </div>
-        </header>
+    <?php include 'sidebar.php'; ?>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div class="bg-white p-6 rounded-3xl shadow-sm border border-outline-variant/20">
-            <div class="flex justify-between items-start mb-4">
-              <div class="p-3 bg-blue-50 text-blue-600 rounded-2xl">
-                <span class="material-symbols-outlined">directions_car</span>
-              </div>
-              <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">ACTIVOS</span>
-            </div>
-            <h3 class="text-4xl font-black text-on-surface"><?php echo $total_activos; ?></h3>
-            <p class="text-on-surface-variant text-sm mt-1">Vehículos en el parqueo ahora mismo</p>
-          </div>
+    <div class="pl-20 transition-all duration-300">
+        <main class="flex-1 p-4 lg:p-10">
+            
+            <header class="flex justify-between items-center mb-10">
+                <div>
+                    <h1 class="font-headline text-3xl font-black text-slate-900 tracking-tight italic">
+                        ¡Hola, <?php echo explode(' ', $user_name)[0]; ?>! 👋
+                    </h1>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                            Sesión de <?php echo ($user_rol === 'admin' ? 'Administrador' : 'Operador'); ?> • ID #<?php echo str_pad($user['id'], 3, '0', STR_PAD_LEFT); ?>
+                        </p>
+                    </div>
+                </div>
+            </header>
 
-          <div class="bg-white p-6 rounded-3xl shadow-sm border border-outline-variant/20">
-            <div class="flex justify-between items-start mb-4">
-              <div class="p-3 bg-green-50 text-green-600 rounded-2xl">
-                <span class="material-symbols-outlined">local_parking</span>
-              </div>
-            </div>
-            <h3 class="text-4xl font-black text-on-surface">24</h3>
-            <p class="text-on-surface-variant text-sm mt-1">Espacios disponibles de 50 totales</p>
-          </div>
+            <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="bg-white p-8 rounded-[2.5rem] border border-outline-variant/10 shadow-sm relative overflow-hidden group">
+                    <div class="absolute right-[-10px] top-[-10px] text-slate-50 opacity-10 group-hover:rotate-12 transition-transform duration-500">
+                        <span class="material-symbols-outlined text-[120px]">grid_view</span>
+                    </div>
+                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Capacidad Total</p>
+                    <h3 class="text-5xl font-black text-slate-900 tracking-tighter"><?php echo $capacidad_total; ?></h3>
+                </div>
 
-          <div class="bg-primary p-6 rounded-3xl shadow-lg text-white flex flex-col justify-between">
-            <p class="font-bold">Acción Rápida</p>
-            <a href="entrada.php" class="mt-4 bg-white text-primary font-bold py-3 px-4 rounded-xl text-center hover:bg-opacity-90 transition-all">
-              Nueva Entrada
-            </a>
-          </div>
-        </div>
+                <div class="bg-white p-8 rounded-[2.5rem] border border-outline-variant/10 shadow-sm relative overflow-hidden group">
+                    <div class="absolute right-[-10px] top-[-10px] text-green-50 opacity-30 group-hover:scale-110 transition-transform duration-500">
+                        <span class="material-symbols-outlined text-[120px]">check_circle</span>
+                    </div>
+                    <p class="text-green-600/60 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Espacios Libres</p>
+                    <h3 class="text-5xl font-black text-green-600 tracking-tighter"><?php echo $espacios_disponibles; ?></h3>
+                </div>
 
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/20 overflow-hidden">
-          <div class="p-6 border-b border-outline-variant/10">
-            <h3 class="font-headline font-bold text-lg">Últimos Movimientos</h3>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left">
-              <thead class="bg-gray-50 text-on-surface-variant text-xs uppercase font-bold">
-                <tr>
-                  <th class="px-6 py-4">Placa</th>
-                  <th class="px-6 py-4">Entrada</th>
-                  <th class="px-6 py-4">Estado</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-outline-variant/10">
-                <?php while ($row = $res_historial->fetch_assoc()): ?>
-                <tr class="hover:bg-gray-50 transition-colors">
-                  <td class="px-6 py-4 font-bold text-primary"><?php echo $row[
-                      'placa'
-                  ]; ?></td>
-                  <td class="px-6 py-4 text-sm"><?php echo $row[
-                      'hora_entrada'
-                  ]; ?></td>
-                  <td class="px-6 py-4">
-                    <span class="px-3 py-1 rounded-full text-[10px] font-bold <?php echo $row[
-                        'estado'
-                    ] == 'EN_PARQUEO'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-600'; ?>">
-                      <?php echo $row['estado']; ?>
-                    </span>
-                  </td>
-                </tr>
-                <?php endwhile; ?>
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
+                <div class="bg-white p-8 rounded-[2.5rem] border border-outline-variant/10 shadow-sm relative overflow-hidden group">
+                    <div class="absolute right-[-10px] top-[-10px] text-orange-50 opacity-30 group-hover:translate-x-4 transition-transform duration-500">
+                        <span class="material-symbols-outlined text-[120px]">directions_car</span>
+                    </div>
+                    <p class="text-orange-600/60 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Ocupación Actual</p>
+                    <h3 class="text-5xl font-black text-orange-600 tracking-tighter"><?php echo $total_activos; ?></h3>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-[3rem] shadow-sm border border-outline-variant/20 overflow-hidden">
+                <div class="p-8 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50/30">
+                    <div>
+                        <h3 class="font-headline font-black text-2xl text-slate-800 tracking-tight">Monitor en Tiempo Real</h3>
+                        <p class="text-xs text-slate-400 font-medium italic">Seguimiento activo y registros recientes.</p>
+                    </div>
+                    <a href="historial.php" class="bg-primary text-white px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95">
+                        Historial Completo
+                    </a>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-slate-400 text-[10px] uppercase font-black tracking-[0.2em]">
+                                <th class="px-8 py-6">Identificación</th>
+                                <th class="px-8 py-6 text-center">Entrada</th>
+                                <th class="px-8 py-6 text-center">Salida</th>
+                                <th class="px-8 py-6 text-center">Tiempo / Duración</th>
+                                <th class="px-8 py-6 text-right">Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            <?php if ($res_historial->num_rows > 0): ?>
+                                <?php while ($row = $res_historial->fetch_assoc()): ?>
+                                <tr class="hover:bg-slate-50/80 transition-all group">
+                                    <td class="px-8 py-6">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                                <span class="material-symbols-outlined text-2xl">minor_crash</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-black text-slate-800 text-lg tracking-widest leading-none mb-1"><?php echo strtoupper($row['placa']); ?></p>
+                                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter"><?php echo $row['marca'] ?: 'Vehículo General'; ?></p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <td class="px-8 py-6 text-center">
+                                        <span class="text-sm font-bold text-slate-600 block"><?php echo date('h:i A', strtotime($row['hora_entrada'])); ?></span>
+                                        <span class="text-[10px] text-slate-300 font-black tracking-tighter"><?php echo date('d/m/y', strtotime($row['hora_entrada'])); ?></span>
+                                    </td>
+
+                                    <td class="px-8 py-6 text-center">
+                                        <?php if ($row['hora_salida']): ?>
+                                            <span class="text-sm font-bold text-slate-600 block"><?php echo date('h:i A', strtotime($row['hora_salida'])); ?></span>
+                                            <span class="text-[10px] text-slate-300 font-black tracking-tighter"><?php echo date('d/m/y', strtotime($row['hora_salida'])); ?></span>
+                                        <?php else: ?>
+                                            <span class="text-xs text-slate-300 italic">Pendiente</span>
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <td class="px-8 py-6 text-center">
+                                        <?php if ($row['estado'] == 'EN_PARQUEO'): ?>
+                                            <div class="inline-flex flex-col items-center">
+                                                <span class="text-xl font-black text-primary timer-font tracking-tighter" 
+                                                      data-time="<?php echo date('c', strtotime($row['hora_entrada'])); ?>">
+                                                    00:00:00
+                                                </span>
+                                                <span class="text-[9px] font-black text-blue-300 uppercase tracking-widest">En vivo</span>
+                                            </div>
+                                        <?php else: 
+                                            $entrada = new DateTime($row['hora_entrada']);
+                                            $salida = new DateTime($row['hora_salida']);
+                                            $intervalo = $entrada->diff($salida);
+                                            $duracion = $intervalo->format('%H:%I:%S');
+                                        ?>
+                                            <div class="inline-flex flex-col items-center opacity-60">
+                                                <span class="text-sm font-black text-slate-500 timer-font"><?php echo $duracion; ?></span>
+                                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Total</span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <td class="px-8 py-6 text-right">
+                                        <?php if ($row['estado'] == 'EN_PARQUEO'): ?>
+                                            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black bg-green-50 text-green-600 border border-green-100 shadow-sm">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                                DENTRO
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black bg-slate-100 text-slate-400 border border-slate-200 uppercase">
+                                                SALIDA
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5" class="px-10 py-24 text-center">
+                                        <div class="opacity-20 mb-4 text-slate-400">
+                                            <span class="material-symbols-outlined text-7xl">nest_remote_comfort_sensor</span>
+                                        </div>
+                                        <p class="text-slate-400 font-black uppercase tracking-widest text-sm">Esperando registros...</p>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
     </div>
-  </body>
+
+    <script>
+        function actualizarCronometros() {
+            const timers = document.querySelectorAll('[data-time]');
+            timers.forEach(timer => {
+                const start = new Date(timer.getAttribute('data-time')).getTime();
+                const now = new Date().getTime();
+                const diff = now - start;
+
+                if (diff > 0) {
+                    const h = Math.floor(diff / 3600000);
+                    const m = Math.floor((diff % 3600000) / 60000);
+                    const s = Math.floor((diff % 60000) / 1000);
+
+                    timer.innerText = 
+                        (h < 10 ? "0" + h : h) + ":" + 
+                        (m < 10 ? "0" + m : m) + ":" + 
+                        (s < 10 ? "0" + s : s);
+                }
+            });
+        }
+
+        setInterval(actualizarCronometros, 1000);
+        actualizarCronometros();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname.split('/').pop() || 'menu.php';
+            document.querySelectorAll('aside nav a').forEach(link => {
+                if(link.getAttribute('href') === currentPath) {
+                    link.classList.add('bg-primary/10', 'text-primary', 'font-bold');
+                    link.classList.remove('text-gray-500');
+                }
+            });
+        });
+    </script>
+</body>
 </html>
-
-<script>
-  const btn = document.getElementById('userMenuBtn');
-  const menu = document.getElementById('userMenu');
-
-  btn.addEventListener('click', () => {
-    menu.classList.toggle('hidden');
-  });
-
-  // Opcional: cerrar menú si se hace clic fuera
-  document.addEventListener('click', (e) => {
-    if (!btn.contains(e.target) && !menu.contains(e.target)) {
-      menu.classList.add('hidden');
-    }
-  });
-</script>
