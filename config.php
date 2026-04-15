@@ -5,7 +5,7 @@ session_start();
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'park_control');
+define('DB_NAME', 'db_parkeo');
 
 // Conexión a la base de datos
 $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
