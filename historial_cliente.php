@@ -1,34 +1,33 @@
 <?php
 require_once 'functions.php';
-require_login();
 
-// 1. Obtener filtros y sanitizar
+// Verificación de seguridad: Solo clientes
+if (!is_logged_in() || $_SESSION['user']['rol'] !== 'cliente') {
+    header('Location: index.php');
+    exit();
+}
+
+$user_id = $_SESSION['user']['id'];
+
+// 1. Obtener filtros de búsqueda
 $search = $_GET['search'] ?? '';
-
-// 2. Consulta de historial completa con Prepared Statements
-// Nota: Usamos total_pago y validamos estados según el esquema de tu BD
-$query = "SELECT * FROM movimientos";
-if (!empty($search)) {
-    $query .= " WHERE placa LIKE ? OR marca LIKE ?";
-}
-$query .= " ORDER BY hora_entrada DESC";
-
-$stmt = $mysqli->prepare($query);
+$where_clause = "WHERE usuario_id = $user_id"; // Filtro obligatorio por seguridad
 
 if (!empty($search)) {
-    $search_param = "%$search%";
-    $stmt->bind_param("ss", $search_param, $search_param);
+    $search = $mysqli->real_escape_string($search);
+    $where_clause .= " AND (placa LIKE '%$search%' OR marca LIKE '%$search%')";
 }
 
-$stmt->execute();
-$res_historial = $stmt->get_result();
+// 2. Consulta de historial personalizada
+$query = "SELECT * FROM movimientos $where_clause ORDER BY hora_entrada DESC";
+$res_historial = $mysqli->query($query);
 ?>
 <!doctype html>
-<html class="light" lang="es">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>ParkControl - Historial de Movimientos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Historial - ParkControl</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -39,7 +38,7 @@ $res_historial = $stmt->get_result();
         theme: {
           extend: {
             colors: {
-              'surface-dim': '#f1f3f9',
+              'surface-dim': '#f8fafc',
               'primary': '#005ac1',
               'outline-variant': '#c3c7cf',
             }
@@ -49,22 +48,19 @@ $res_historial = $stmt->get_result();
     </script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; }
         .font-headline { font-family: 'Manrope', sans-serif; }
+        .timer-font { font-family: 'ui-monospace', monospace; }
         
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         main { animation: fadeInUp 0.4s ease-out; }
-        .sidebar-text { white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; }
-        aside:hover .sidebar-text { opacity: 1; visibility: visible; }
-        .timer-font { font-family: 'ui-monospace', monospace; }
-        
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        @media (max-width: 768px) {
+            .hide-mobile { display: none; }
+        }
     </style>
 </head>
 <body class="bg-surface-dim min-h-screen">
@@ -72,12 +68,14 @@ $res_historial = $stmt->get_result();
     <?php include 'sidebar.php'; ?>
 
     <div class="pl-20 transition-all duration-300">
-        <main class="flex-1 p-4 lg:p-10">
+        <main class="flex-1 p-4 lg:p-10 max-w-7xl mx-auto">
             
+            <!-- HEADER -->
             <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div>
-                    <h2 class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Auditoría</h2>
-                    <h1 class="font-headline text-4xl font-black text-slate-900 tracking-tight">Historial General</h1>
+                    <h2 class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Actividad</h2>
+                    <h1 class="font-headline text-4xl font-black text-slate-900 tracking-tight">Mi Historial</h1>
+                    <p class="text-slate-400 text-xs font-medium mt-1">Consulta tus registros de entrada y salida.</p>
                 </div>
 
                 <form action="" method="GET" class="relative group w-full md:w-80">
@@ -88,16 +86,17 @@ $res_historial = $stmt->get_result();
                 </form>
             </header>
 
-            <section class="bg-white rounded-[2.5rem] shadow-sm border border-outline-variant/20 overflow-hidden">
+            <!-- TABLA DE MOVIMIENTOS -->
+            <section class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="text-slate-400 text-[10px] uppercase font-black tracking-widest bg-slate-50/50">
                                 <th class="px-8 py-6">Vehículo</th>
                                 <th class="px-8 py-6 text-center">Entrada</th>
-                                <th class="px-8 py-6 text-center">Salida</th>
-                                <th class="px-8 py-6 text-center">Tiempo / Pago</th>
-                                <th class="px-8 py-6 text-center">Estado</th>
+                                <th class="px-8 py-6 text-center hide-mobile">Salida</th>
+                                <th class="px-8 py-6 text-center">Duración</th>
+                                <th class="px-8 py-6 text-center">Monto</th>
                                 <th class="px-8 py-6 text-right">Recibo</th>
                             </tr>
                         </thead>
@@ -112,7 +111,7 @@ $res_historial = $stmt->get_result();
                                             </div>
                                             <div>
                                                 <p class="font-black text-slate-800 tracking-wider leading-none mb-1 text-base"><?php echo strtoupper($row['placa']); ?></p>
-                                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter"><?php echo $row['marca'] ?: 'SIN MARCA'; ?></p>
+                                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter"><?php echo $row['marca'] ?: 'MI VEHÍCULO'; ?></p>
                                             </div>
                                         </div>
                                     </td>
@@ -122,12 +121,12 @@ $res_historial = $stmt->get_result();
                                         <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter"><?php echo date('d M, Y', strtotime($row['hora_entrada'])); ?></span>
                                     </td>
 
-                                    <td class="px-8 py-6 text-center">
+                                    <td class="px-8 py-6 text-center hide-mobile">
                                         <?php if ($row['hora_salida']): ?>
                                             <span class="text-sm font-bold text-slate-700 block mb-0.5"><?php echo date('h:i A', strtotime($row['hora_salida'])); ?></span>
                                             <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter"><?php echo date('d M, Y', strtotime($row['hora_salida'])); ?></span>
                                         <?php else: ?>
-                                            <span class="text-[10px] text-slate-300 font-black italic uppercase tracking-widest">En Parqueo</span>
+                                            <span class="text-[10px] text-primary font-black italic uppercase tracking-widest animate-pulse">En Parqueo</span>
                                         <?php endif; ?>
                                     </td>
 
@@ -138,36 +137,27 @@ $res_historial = $stmt->get_result();
                                                       data-time="<?php echo date('c', strtotime($row['hora_entrada'])); ?>">
                                                     00:00:00
                                                 </span>
-                                                <span class="text-[9px] font-black text-green-600 uppercase tracking-widest">Calculando...</span>
                                             </div>
                                         <?php else: 
                                             $entrada = new DateTime($row['hora_entrada']);
                                             $salida = new DateTime($row['hora_salida']);
                                             $intervalo = $entrada->diff($salida);
-                                        ?>
-                                            <div class="inline-flex flex-col items-center">
-                                                <span class="text-sm font-black text-slate-500 timer-font"><?php echo $intervalo->format('%H:%I:%S'); ?></span>
-                                                <span class="text-[10px] font-bold text-slate-900">RD$ <?php echo number_format($row['total_pago'], 2); ?></span>
-                                            </div>
-                                        <?php endif; ?>
+                                            echo '<span class="text-sm font-black text-slate-500 timer-font">'.$intervalo->format('%H:%I:%S').'</span>';
+                                        endif; ?>
                                     </td>
 
                                     <td class="px-8 py-6 text-center">
-                                        <?php if ($row['estado'] == 'EN_PARQUEO'): ?>
-                                            <span class="inline-block px-3 py-1 rounded-full text-[9px] font-black bg-blue-50 text-blue-600 border border-blue-100">
-                                                ACTIVO
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="inline-block px-3 py-1 rounded-full text-[9px] font-black bg-slate-100 text-slate-400">
-                                                COMPLETADO
-                                            </span>
-                                        <?php endif; ?>
+                                        <!-- CORRECCIÓN: Se agrega ?? 0 para evitar el error de índice indefinido -->
+                                        <p class="text-sm font-black text-slate-900">RD$ <?php echo number_format($row['monto'] ?? 0, 2); ?></p>
+                                        <span class="text-[9px] font-black uppercase <?php echo $row['estado'] == 'FINALIZADO' ? 'text-emerald-500' : 'text-amber-500'; ?>">
+                                            <?php echo ($row['estado'] == 'EN_PARQUEO') ? 'Pendiente' : 'Pagado'; ?>
+                                        </span>
                                     </td>
 
                                     <td class="px-8 py-6 text-right">
                                         <a href="ticket.php?id=<?php echo $row['id']; ?>" target="_blank" 
                                            class="w-10 h-10 inline-flex items-center justify-center rounded-xl text-slate-300 hover:text-primary hover:bg-primary/5 transition-all">
-                                            <span class="material-symbols-outlined text-xl">print</span>
+                                            <span class="material-symbols-outlined text-xl">receipt_long</span>
                                         </a>
                                     </td>
                                 </tr>
@@ -175,9 +165,9 @@ $res_historial = $stmt->get_result();
                             <?php else: ?>
                                 <tr>
                                     <td colspan="6" class="px-8 py-32 text-center">
-                                        <div class="flex flex-col items-center gap-4 opacity-10">
-                                            <span class="material-symbols-outlined text-8xl">dataset_blur</span>
-                                            <p class="text-slate-900 font-black uppercase tracking-[0.3em] text-sm">Sin registros</p>
+                                        <div class="flex flex-col items-center gap-4 opacity-20">
+                                            <span class="material-symbols-outlined text-8xl text-slate-300">history_toggle_off</span>
+                                            <p class="text-slate-900 font-black uppercase tracking-[0.3em] text-sm">No hay registros</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -212,16 +202,6 @@ $res_historial = $stmt->get_result();
 
         setInterval(actualizarCronometros, 1000);
         actualizarCronometros();
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentPath = window.location.pathname.split('/').pop() || 'menu.php';
-            document.querySelectorAll('aside nav a').forEach(link => {
-                if(link.getAttribute('href') === currentPath) {
-                    link.classList.add('bg-primary/10', 'text-primary', 'font-bold');
-                    link.classList.remove('text-gray-500');
-                }
-            });
-        });
     </script>
 </body>
 </html>

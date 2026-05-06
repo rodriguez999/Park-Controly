@@ -68,13 +68,12 @@ $config = get_config($mysqli);
       }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .font-headline { font-family: 'Manrope', sans-serif; }
-        
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        
-        .card-blur { backdrop-filter: blur(10px); background-color: rgba(255, 255, 255, 0.8); }
+        main { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-surface-dim min-h-screen">
@@ -82,129 +81,94 @@ $config = get_config($mysqli);
     <div class="flex">
         <?php include 'sidebar.php'; ?>
 
-        <main class="flex-1 pl-24 pr-4 lg:pr-10 py-10 transition-all duration-300">
-            <header class="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h2 class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-1 leading-none">Panel de Control</h2>
-                    <h1 class="font-headline text-4xl font-black text-on-surface tracking-tight">Ajustes Generales</h1>
-                </div>
-                
-                <div class="relative group">
-                    <button id="userMenuBtn" class="flex items-center gap-3 bg-white p-1.5 pr-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all active:scale-95">
-                        <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center font-black shadow-lg shadow-blue-100">
-                            <?php echo strtoupper(substr($user_name, 0, 1)); ?>
-                        </div>
-                        <div class="text-left hidden md:block">
-                            <p class="text-xs font-black text-slate-800 leading-none mb-0.5"><?php echo $user_name; ?></p>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Administrador</p>
-                        </div>
-                        <span class="material-symbols-outlined text-slate-300 text-sm ml-2 group-hover:text-primary transition-colors">expand_more</span>
-                    </button>
-
-                    <div id="userMenu" class="hidden absolute right-0 top-16 w-52 bg-white shadow-2xl rounded-3xl border border-slate-100 z-50 overflow-hidden py-2 animate-in fade-in zoom-in-95 duration-200">
-                        <a href="perfil.php" class="flex items-center gap-3 px-5 py-3.5 hover:bg-slate-50 text-slate-600 font-bold text-sm transition-colors">
-                            <span class="material-symbols-outlined text-xl opacity-50">account_circle</span> Perfil
-                        </a>
-                        <hr class="my-2 border-slate-100">
-                        <a href="logout.php" class="flex items-center gap-3 px-5 py-3.5 hover:bg-red-50 text-red-600 font-bold text-sm transition-colors">
-                            <span class="material-symbols-outlined text-xl">power_settings_new</span> Cerrar Sesión
-                        </a>
-                    </div>
-                </div>
+        <!-- Se aumentó el padding y se centró el contenido máximo para mejor lectura -->
+        <main class="flex-1 pl-28 pr-8 lg:pr-16 py-12 transition-all duration-300">
+            
+            <header class="mb-14">
+                <h2 class="text-[10px] font-black text-primary uppercase tracking-[0.4em] mb-2 leading-none">Sistema de Gestión</h2>
+                <h1 class="font-headline text-5xl font-black text-on-surface tracking-tight">Ajustes Operativos</h1>
+                <p class="text-slate-400 mt-2 font-medium">Modifica los valores base que rigen el funcionamiento del parqueo.</p>
             </header>
 
-            <div class="max-w-5xl">
+            <div class="max-w-6xl">
                 <?php echo $mensaje; ?>
 
-                <div class="grid lg:grid-cols-5 gap-10">
-                    <div class="lg:col-span-2 space-y-6">
-                        <div class="bg-primary text-white p-8 rounded-[2.5rem] shadow-xl shadow-blue-200 relative overflow-hidden group">
+                <div class="grid lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Lado Izquierdo: Información y Estado (4 columnas) -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <div class="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden group">
                             <div class="relative z-10">
-                                <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md">
-                                    <span class="material-symbols-outlined text-3xl">info</span>
+                                <div class="w-12 h-12 bg-blue-50 text-primary rounded-2xl flex items-center justify-center mb-6">
+                                    <span class="material-symbols-outlined text-2xl font-bold">payments</span>
                                 </div>
-                                <h3 class="font-headline font-black text-xl mb-3">Parámetros de Cálculo</h3>
-                                <p class="text-blue-50 text-sm leading-relaxed font-medium opacity-90">
-                                    El sistema utiliza una política de <span class="text-white font-bold underline decoration-blue-300 underline-offset-4">hora iniciada, hora cobrada</span>. 
-                                    Asegúrese de que la tarifa sea acorde a la moneda local (RD$).
+                                <h3 class="font-headline font-black text-lg mb-2 text-slate-800">Política de Cobro</h3>
+                                <p class="text-slate-500 text-sm leading-relaxed font-medium">
+                                    El sistema aplica la regla de <span class="text-primary font-bold">fracción de hora como hora completa</span>. Los cambios realizados aquí afectarán a todos los vehículos que marquen salida desde este momento.
                                 </p>
                             </div>
-                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all"></div>
                         </div>
-                        
-                        <div class="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm flex items-center gap-5">
-                            <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
-                                <span class="material-symbols-outlined text-2xl">update</span>
+
+                        <div class="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-2 h-2 bg-green-400 rounded-full animate-ping"></div>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Terminal Sincronizada</span>
                             </div>
-                            <div>
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Estado de Sincronización</p>
-                                <p class="font-bold text-slate-700 text-sm italic">Actualizado: <?php echo date('d/m/Y - H:i'); ?></p>
-                            </div>
+                            <p class="text-xs font-medium text-slate-400 mb-1">Última actualización de parámetros:</p>
+                            <p class="font-mono text-sm font-bold text-blue-300"><?php echo date('d M, Y - h:i A'); ?></p>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-3">
-                        <div class="bg-white rounded-[3rem] shadow-sm border border-slate-200 overflow-hidden">
-                            <div class="p-8 lg:p-14">
-                                <form action="configuracion.php" method="POST" class="space-y-12">
-                                    
-                                    <div class="group">
-                                        <div class="flex justify-between items-end mb-4 px-2">
-                                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Tarifa por Hora</label>
-                                            <span class="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full uppercase">Moneda: RD$</span>
-                                        </div>
-                                        <div class="relative">
-                                            <div class="absolute left-7 top-1/2 -translate-y-1/2 text-slate-300 font-black text-2xl group-focus-within:text-primary transition-colors">$</div>
-                                            <input type="number" step="0.01" name="tarifa_hora" 
-                                                   value="<?php echo $config['tarifa_hora']; ?>"
-                                                   class="w-full pl-16 pr-8 py-7 bg-slate-50 border-2 border-slate-50 rounded-[2rem] focus:border-primary focus:bg-white outline-none transition-all font-black text-3xl text-slate-700 shadow-inner group-hover:border-slate-200" 
-                                                   required>
-                                        </div>
+                    <!-- Lado Derecho: Formulario (8 columnas) -->
+                    <div class="lg:col-span-8">
+                        <div class="bg-white rounded-[3.5rem] shadow-sm border border-slate-200 p-8 lg:p-12">
+                            <form action="configuracion.php" method="POST" class="grid md:grid-cols-2 gap-10">
+                                
+                                <!-- Tarifa -->
+                                <div class="space-y-4">
+                                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Tarifa por Hora (RD$)</label>
+                                    <div class="relative group">
+                                        <div class="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 font-black text-2xl group-focus-within:text-primary transition-colors">$</div>
+                                        <input type="number" step="0.01" name="tarifa_hora" 
+                                               value="<?php echo $config['tarifa_hora']; ?>"
+                                               class="w-full pl-14 pr-6 py-8 bg-slate-50 border-2 border-slate-50 rounded-[2rem] focus:border-primary focus:bg-white outline-none transition-all font-black text-4xl text-slate-800 group-hover:border-slate-200" 
+                                               required>
                                     </div>
+                                    <p class="text-[10px] text-slate-400 font-bold italic ml-2">* Se recomienda múltiplos de 25 o 50.</p>
+                                </div>
 
-                                    <div class="group">
-                                        <div class="flex justify-between items-end mb-4 px-2">
-                                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Aforo Máximo</label>
-                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter italic italic">Límite físico de la terminal</span>
-                                        </div>
-                                        <div class="relative">
-                                            <span class="material-symbols-outlined absolute left-7 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-all text-2xl">garage</span>
-                                            <input type="number" name="capacidad_total" 
-                                                   value="<?php echo $config['capacidad_total']; ?>"
-                                                   class="w-full pl-16 pr-8 py-7 bg-slate-50 border-2 border-slate-50 rounded-[2rem] focus:border-primary focus:bg-white outline-none transition-all font-black text-3xl text-slate-700 shadow-inner group-hover:border-slate-200" 
-                                                   required>
-                                        </div>
+                                <!-- Capacidad -->
+                                <div class="space-y-4">
+                                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Capacidad Máxima</label>
+                                    <div class="relative group">
+                                        <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-all text-2xl">directions_car</span>
+                                        <input type="number" name="capacidad_total" 
+                                               value="<?php echo $config['capacidad_total']; ?>"
+                                               class="w-full pl-16 pr-6 py-8 bg-slate-50 border-2 border-slate-50 rounded-[2rem] focus:border-primary focus:bg-white outline-none transition-all font-black text-4xl text-slate-800 group-hover:border-slate-200" 
+                                               required>
                                     </div>
+                                    <p class="text-[10px] text-slate-400 font-bold italic ml-2">* Espacios totales disponibles en el local.</p>
+                                </div>
 
-                                    <div class="pt-6">
-                                        <button type="submit" class="w-full bg-slate-900 text-white font-black py-7 rounded-[2rem] hover:bg-primary transition-all shadow-2xl shadow-slate-200 flex items-center justify-center gap-4 text-xs tracking-[0.3em] uppercase active:scale-[0.97] group">
-                                            <span class="material-symbols-outlined group-hover:rotate-180 transition-transform duration-500">sync</span>
-                                            Sincronizar Parámetros
-                                        </button>
-                                        <p class="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-6 opacity-60">Acción protegida por credenciales de administrador</p>
-                                    </div>
+                                <!-- Botón de Guardar que ocupa las 2 columnas -->
+                                <div class="md:col-span-2 pt-4">
+                                    <button type="submit" class="w-full bg-primary text-white font-black py-8 rounded-[2.5rem] hover:bg-slate-900 transition-all shadow-2xl shadow-blue-100 flex items-center justify-center gap-4 text-xs tracking-[0.3em] uppercase active:scale-[0.98] group">
+                                        <span class="material-symbols-outlined group-hover:rotate-180 transition-transform duration-700">settings_backup_restore</span>
+                                        Actualizar Parámetros Operativos
+                                    </button>
+                                </div>
 
-                                </form>
-                            </div>
+                            </form>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        // Dropdown usuario
-        const menuBtn = document.getElementById('userMenuBtn');
-        const userMenu = document.getElementById('userMenu');
-
-        menuBtn?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            userMenu.classList.toggle('hidden');
-        });
-        document.addEventListener('click', () => userMenu?.classList.add('hidden'));
-
-        // Navegación activa
+        // Lógica de navegación activa simplificada
         const currentPath = window.location.pathname.split('/').pop() || 'configuracion.php';
         document.querySelectorAll('aside nav a').forEach(link => {
             if(link.getAttribute('href') === currentPath) {

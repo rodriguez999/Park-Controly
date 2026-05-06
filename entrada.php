@@ -30,11 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             Este vehículo ya tiene una entrada activa en el parqueo.
         </div>';
     } else {
-        // Registro de la entrada
+        // AJUSTE: Si el usuario es cliente, vinculamos el movimiento a su ID.
+        // Si es admin u operador, lo dejamos como NULL a menos que el sistema requiera trazabilidad del empleado.
+        $usuario_vinculado = ($user_rol === 'cliente') ? $user_id : null;
+
+        // Registro de la entrada incluyendo la columna usuario_id
         $stmt = $mysqli->prepare(
-            "INSERT INTO movimientos (placa, hora_entrada, estado) VALUES (?, NOW(), 'EN_PARQUEO')"
+            "INSERT INTO movimientos (placa, hora_entrada, estado, usuario_id) VALUES (?, NOW(), 'EN_PARQUEO', ?)"
         );
-        $stmt->bind_param('s', $placa);
+        $stmt->bind_param('si', $placa, $usuario_vinculado);
 
         if ($stmt->execute()) {
             $nuevo_id = $mysqli->insert_id;
@@ -56,6 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
+
+// Capturar placa desde la URL (si viene desde consulta_cliente.php)
+$placa_prellenada = isset($_GET['placa']) ? strtoupper(trim($_GET['placa'])) : '';
 ?>
 <!doctype html>
 <html class="light" lang="es">
@@ -128,6 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-3xl">directions_car</span>
                                 <input type="text" name="placa" id="inputPlaca" placeholder="A000000" required maxlength="8"
+                                       value="<?php echo htmlspecialchars($placa_prellenada); ?>"
                                        class="w-full pl-16 pr-6 py-6 rounded-3xl border-2 border-slate-100 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all uppercase text-3xl font-mono font-bold tracking-[0.15em] placeholder:text-slate-100">
                             </div>
                         </div>
@@ -146,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                         <button type="submit" class="w-full bg-primary text-white font-black text-xs uppercase tracking-[0.2em] py-6 rounded-3xl hover:bg-blue-700 transition-all flex items-center justify-center gap-4 shadow-2xl shadow-blue-200 group active:scale-[0.98]">
                             <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">confirmation_number</span>
-                            Confirmar e Imprimir
+                            Confirmar Registro
                         </button>
                     </form>
                 </div>
@@ -181,6 +189,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             });
         });
     </script>
-</body 
-
-
+</body>
+</html>

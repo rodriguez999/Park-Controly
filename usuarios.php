@@ -1,234 +1,283 @@
 <?php
 require_once 'functions.php';
-// Protección de nivel de administrador
 require_admin(); 
 
 $mensaje = '';
 
-// --- LÓGICA DE REGISTRO ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'registrar') {
+// Función para validar nivel de seguridad de contraseña
+function validarPassword($pass) {
+    return strlen($pass) > 6 && preg_match('/[A-Z]/', $pass) && preg_match('/[0-9]/', $pass);
+}
+
+// --- LÓGICA DE PROCESAMIENTO (REGISTRO Y ACTUALIZACIÓN) ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
     $nombre = trim($_POST['nombre']);
     $username = trim($_POST['username']);
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $correo = trim($_POST['correo']);
     $rol = $_POST['rol'];
+    $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+    $password = $_POST['password'];
 
-    // Verificar si el usuario ya existe
-    $check = $mysqli->prepare("SELECT id FROM usuarios WHERE username = ?");
-    $check->bind_param('s', $username);
-    $check->execute();
-    if ($check->get_result()->num_rows > 0) {
-        $mensaje = '<div class="bg-amber-50 text-amber-700 p-5 rounded-3xl mb-8 flex items-center gap-4 border border-amber-100 italic font-medium shadow-sm">
-                        <span class="material-symbols-outlined">warning</span>
-                        <p class="text-sm">El identificador @'.$username.' ya está en uso. Intenta con otro.</p>
-                    </div>';
-    } else {
-        $stmt = $mysqli->prepare("INSERT INTO usuarios (nombre, username, password, rol) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param('ssss', $nombre, $username, $password, $rol);
-        if ($stmt->execute()) {
-            $mensaje = '
-            <div class="mb-8 p-5 rounded-[2.5rem] bg-green-50 text-green-700 border border-green-100 flex items-center gap-4 animate-in fade-in slide-in-from-top duration-500 shadow-sm">
-                <div class="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-green-100">
-                    <span class="material-symbols-outlined text-xl font-bold">person_add</span>
-                </div>
-                <div>
-                    <p class="font-black text-sm uppercase tracking-tight">Usuario Registrado</p>
-                    <p class="text-xs opacity-80 font-medium">El nuevo miembro ha sido añadido al sistema con éxito.</p>
-                </div>
-            </div>';
+    if ($_POST['accion'] === 'registrar') {
+        $check = $mysqli->prepare("SELECT id FROM usuarios WHERE username = ? OR correo = ?");
+        $check->bind_param('ss', $username, $correo);
+        $check->execute();
+        
+        if ($check->get_result()->num_rows > 0) {
+            $mensaje = '<div class="bg-amber-50 text-amber-700 p-4 rounded-2xl mb-6 border border-amber-100 flex items-center gap-3 shadow-sm"><span class="material-symbols-outlined text-lg">warning</span><p class="text-xs font-bold">El username o el correo ya están en uso.</p></div>';
+        } elseif (!validarPassword($password)) {
+            $mensaje = '<div class="bg-red-50 text-red-700 p-4 rounded-2xl mb-6 border border-red-100 flex items-center gap-3 shadow-sm"><span class="material-symbols-outlined text-lg">security</span><p class="text-xs font-bold">La contraseña no cumple los requisitos de seguridad.</p></div>';
+        } else {
+            $password_encriptada = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $mysqli->prepare("INSERT INTO usuarios (nombre, username, correo, password_hash, rol) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param('sssss', $nombre, $username, $correo, $password_encriptada, $rol);
+            if ($stmt->execute()) {
+                $mensaje = '<div class="bg-green-50 text-green-700 p-4 rounded-2xl mb-6 border border-green-100 flex items-center gap-3 shadow-sm"><span class="material-symbols-outlined text-lg">person_add</span><p class="text-xs font-bold">¡Usuario creado exitosamente!</p></div>';
+            }
+        }
+    } elseif ($_POST['accion'] === 'editar') {
+        if (!empty($password)) {
+            if (!validarPassword($password)) {
+                $mensaje = '<div class="bg-red-50 text-red-700 p-4 rounded-2xl mb-6 border border-red-100 flex items-center gap-3 shadow-sm"><span class="material-symbols-outlined text-lg">security</span><p class="text-xs font-bold">La nueva contraseña es débil.</p></div>';
+            } else {
+                $password_encriptada = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $mysqli->prepare("UPDATE usuarios SET nombre=?, username=?, correo=?, rol=?, password_hash=? WHERE id=?");
+                $stmt->bind_param('sssssi', $nombre, $username, $correo, $rol, $password_encriptada, $id);
+                $stmt->execute();
+                $mensaje = '<div class="bg-blue-50 text-blue-700 p-4 rounded-2xl mb-6 border border-blue-100 flex items-center gap-3 shadow-sm"><span class="material-symbols-outlined text-lg">edit</span><p class="text-xs font-bold">Usuario y contraseña actualizados.</p></div>';
+            }
+        } else {
+            $stmt = $mysqli->prepare("UPDATE usuarios SET nombre=?, username=?, correo=?, rol=? WHERE id=?");
+            $stmt->bind_param('ssssi', $nombre, $username, $correo, $rol, $id);
+            $stmt->execute();
+            $mensaje = '<div class="bg-blue-50 text-blue-700 p-4 rounded-2xl mb-6 border border-blue-100 flex items-center gap-3 shadow-sm"><span class="material-symbols-outlined text-lg">edit</span><p class="text-xs font-bold">Usuario actualizado correctamente.</p></div>';
         }
     }
 }
 
 // --- LÓGICA DE ELIMINACIÓN ---
-if (isset($_GET['eliminar'])) {
-    $id_a_borrar = intval($_GET['eliminar']);
+if (isset($_GET['confirmar_eliminar'])) {
+    $id_a_borrar = intval($_GET['confirmar_eliminar']);
     if ($id_a_borrar === $_SESSION['user']['id']) {
-        $mensaje = '<div class="bg-red-50 text-red-700 p-5 rounded-3xl mb-8 flex items-center gap-4 border border-red-100 animate-pulse">
-                        <span class="material-symbols-outlined">error</span>
-                        <p class="font-bold text-sm">Acción protegida: No puedes eliminar tu propia cuenta.</p>
-                    </div>';
+        $mensaje = '<div class="bg-red-50 text-red-700 p-4 rounded-2xl mb-6 border border-red-100 flex items-center gap-3"><span class="material-symbols-outlined text-lg">error</span><p class="font-bold text-xs">No puedes eliminar tu propia cuenta.</p></div>';
     } else {
         $stmt = $mysqli->prepare("DELETE FROM usuarios WHERE id = ?");
         $stmt->bind_param('i', $id_a_borrar);
-        if ($stmt->execute()) {
-            $mensaje = '<div class="bg-slate-900 text-white p-5 rounded-3xl mb-8 flex items-center gap-4 shadow-2xl">
-                            <span class="material-symbols-outlined text-red-400">delete_sweep</span>
-                            <p class="font-bold text-sm">Usuario removido del sistema correctamente.</p>
-                        </div>';
-        }
+        $stmt->execute();
+        $mensaje = '<div class="bg-slate-900 text-white p-4 rounded-2xl mb-6 flex items-center gap-3"><span class="material-symbols-outlined text-red-400 text-lg">delete_sweep</span><p class="text-xs font-bold">Usuario eliminado correctamente.</p></div>';
     }
 }
 
-// Obtener lista de usuarios actualizada
-$res_usuarios = $mysqli->query("SELECT id, username, nombre, rol FROM usuarios ORDER BY rol ASC, nombre ASC");
+$res_usuarios = $mysqli->query("SELECT id, username, correo, nombre, rol FROM usuarios ORDER BY rol ASC, nombre ASC");
 ?>
 <!doctype html>
-<html class="light" lang="es">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ParkControl - Gestión de Usuarios</title>
-    
+    <title>ParkControl - Usuarios</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet" />
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { primary: '#005ac1', 'surface-dim': '#f1f3f9' }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { colors: { primary: '#005ac1' } } } }
     </script>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .font-headline { font-family: 'Manrope', sans-serif; }
-        .modal-overlay { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        .modal-overlay { background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); transition: all 0.3s ease; }
     </style>
 </head>
-<body class="bg-surface-dim min-h-screen">
-    
+<body class="bg-[#f1f3f9] min-h-screen">
     <div class="flex">
         <?php include 'sidebar.php'; ?>
 
-        <main class="flex-1 pl-24 pr-4 lg:pr-10 py-10 transition-all duration-300">
-            <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <main class="flex-1 pl-24 pr-6 py-8">
+            <header class="flex justify-between items-end mb-8">
                 <div>
-                    <h2 class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1 leading-none">Administración</h2>
-                    <h1 class="font-headline text-4xl font-black text-slate-900 tracking-tight">Usuarios</h1>
+                    <h2 class="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Configuración</h2>
+                    <h1 class="text-3xl font-black text-slate-900 tracking-tight">Usuarios</h1>
                 </div>
-                
-                <button onclick="toggleModal('modalRegistro')" class="bg-primary text-white px-8 py-4 rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-3 group">
-                    <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">add_circle</span> 
-                    Registrar Nuevo
+                <button onclick="abrirModalRegistro()" class="bg-primary text-white px-6 py-3 rounded-xl text-xs font-bold shadow-lg flex items-center gap-2 hover:bg-blue-700 transition-all">
+                    <span class="material-symbols-outlined text-sm">add</span> Registrar Nuevo
                 </button>
             </header>
 
             <?php echo $mensaje; ?>
 
-            <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200/60 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="text-slate-400 text-[10px] uppercase font-black tracking-[0.2em] bg-slate-50/50">
-                                <th class="px-8 py-6">Perfil</th>
-                                <th class="px-8 py-6">Identificador</th>
-                                <th class="px-8 py-6 text-center">Nivel</th>
-                                <th class="px-8 py-6 text-right">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-50">
-                            <?php while($u = $res_usuarios->fetch_assoc()): ?>
-                            <tr class="hover:bg-slate-50/50 transition-colors group">
-                                <td class="px-8 py-6">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 font-black text-sm group-hover:bg-primary group-hover:text-white transition-all shadow-inner">
-                                            <?php echo strtoupper(substr($u['nombre'], 0, 1)); ?>
-                                        </div>
-                                        <span class="font-bold text-slate-800 text-sm tracking-tight"><?php echo $u['nombre']; ?></span>
+            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200/50 overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50/50 border-b border-slate-100 text-slate-400 text-[10px] uppercase font-black tracking-widest">
+                        <tr>
+                            <th class="px-6 py-4">Usuario</th>
+                            <th class="px-6 py-4">Correo</th>
+                            <th class="px-6 py-4 text-center">Nivel</th>
+                            <th class="px-6 py-4 text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        <?php while($u = $res_usuarios->fetch_assoc()): ?>
+                        <tr class="hover:bg-slate-50/30 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs uppercase"><?php echo substr($u['nombre'], 0, 1); ?></div>
+                                    <div>
+                                        <p class="font-bold text-slate-800 text-sm leading-tight"><?php echo $u['nombre']; ?></p>
+                                        <p class="text-[10px] text-slate-400 italic leading-tight">@<?php echo $u['username']; ?></p>
                                     </div>
-                                </td>
-                                <td class="px-8 py-6 text-sm italic text-slate-400">@<?php echo $u['username']; ?></td>
-                                <td class="px-8 py-6 text-center">
-                                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider <?php echo ($u['rol'] == 'admin') ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' : 'bg-blue-50 text-blue-600 border border-blue-100'; ?>">
-                                        <?php echo $u['rol']; ?>
-                                    </span>
-                                </td>
-                                <td class="px-8 py-6 text-right">
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-xs text-slate-600 font-medium"><?php echo $u['correo']; ?></td>
+                            <td class="px-6 py-4 text-center">
+                                <?php 
+                                    $rol_clase = 'bg-emerald-50 text-emerald-600 border border-emerald-100'; // Default Cliente
+                                    if($u['rol'] == 'admin') $rol_clase = 'bg-indigo-50 text-indigo-600 border border-indigo-100';
+                                    if($u['rol'] == 'operador') $rol_clase = 'bg-blue-50 text-blue-600 border border-blue-100';
+                                ?>
+                                <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider <?php echo $rol_clase; ?>">
+                                    <?php echo $u['rol']; ?>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex justify-end gap-2">
+                                    <button onclick='abrirModalEditar(<?php echo json_encode($u); ?>)' class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-300 hover:text-primary hover:bg-blue-50 transition-all">
+                                        <span class="material-symbols-outlined text-lg">edit</span>
+                                    </button>
                                     <?php if($u['id'] !== $_SESSION['user']['id']): ?>
-                                        <a href="usuarios.php?eliminar=<?php echo $u['id']; ?>" 
-                                           onclick="return confirm('¿Confirmar eliminación permanente de este usuario?')"
-                                           class="w-10 h-10 inline-flex items-center justify-center rounded-xl text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all">
-                                            <span class="material-symbols-outlined text-xl">delete</span>
-                                        </a>
-                                    <?php else: ?>
-                                        <span class="text-[9px] font-black text-primary/40 uppercase tracking-widest bg-primary/5 px-3 py-2 rounded-lg italic">Tú</span>
+                                        <button onclick="confirmarEliminar(<?php echo $u['id']; ?>, '<?php echo $u['nombre']; ?>')" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all">
+                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                        </button>
                                     <?php endif; ?>
-                                </td>
-                            </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
             </div>
         </main>
     </div>
 
-    <div id="modalRegistro" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-overlay">
-        <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+    <!-- MODAL FORMULARIO -->
+    <div id="modalUsuario" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-white w-full max-w-sm rounded-[1.5rem] shadow-2xl overflow-hidden border border-slate-100">
+            <div class="px-6 py-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
                 <div>
-                    <h3 class="font-headline font-black text-xl text-slate-900 leading-none mb-1">Nuevo Usuario</h3>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Credenciales de acceso</p>
+                    <h3 id="modalTitulo" class="font-black text-lg text-slate-800 mb-1">Usuario</h3>
+                    <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Credenciales de acceso</p>
                 </div>
-                <button onclick="toggleModal('modalRegistro')" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm text-slate-400 transition-all">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
+                <button onclick="cerrarModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400"><span class="material-symbols-outlined">close</span></button>
             </div>
             
-            <form action="usuarios.php" method="POST" class="p-8 space-y-6">
-                <input type="hidden" name="accion" value="registrar">
+            <form id="formUsuario" action="usuarios.php" method="POST" onsubmit="return validarSeguridad()" class="p-6 space-y-3">
+                <input type="hidden" name="accion" id="formAccion">
+                <input type="hidden" name="id" id="usuarioId">
                 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase ml-1">Nombre Completo</label>
-                    <input type="text" name="nombre" placeholder="Ej: Juan Perez" required 
-                           class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-primary outline-none font-bold text-slate-700 transition-all">
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase">Nombre Completo</label>
+                    <input type="text" name="nombre" id="inputNombre" required class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white focus:border-primary outline-none font-semibold text-slate-700 text-xs transition-all">
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase ml-1">Username</label>
-                        <input type="text" name="username" placeholder="juanp" required 
-                               class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-primary outline-none font-bold text-slate-700 transition-all">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-black text-slate-400 uppercase">Username</label>
+                        <input type="text" name="username" id="inputUsername" required class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white focus:border-primary outline-none font-semibold text-slate-700 text-xs">
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase ml-1">Rol</label>
-                        <select name="rol" class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-primary outline-none font-bold text-slate-700 transition-all appearance-none">
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-black text-slate-400 uppercase">Rol</label>
+                        <select name="rol" id="inputRol" class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl outline-none font-semibold text-slate-700 text-xs appearance-none">
                             <option value="operador">Operador</option>
                             <option value="admin">Administrador</option>
+                            <option value="cliente">Cliente/Usuario</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase ml-1">Contraseña Temporal</label>
-                    <input type="password" name="password" placeholder="••••••••" required 
-                           class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-primary outline-none font-bold text-slate-700 transition-all">
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase">Correo Electrónico</label>
+                    <input type="email" name="correo" id="inputCorreo" required class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white focus:border-primary outline-none text-xs">
                 </div>
 
-                <button type="submit" class="w-full bg-primary text-white font-black py-5 rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 text-sm tracking-wider uppercase flex items-center justify-center gap-3 active:scale-95">
-                    <span class="material-symbols-outlined">person_add</span>
-                    Confirmar Registro
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase">Contraseña</label>
+                    <input type="password" name="password" id="inputPassword" placeholder="••••••••" class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white focus:border-primary outline-none text-xs">
+                    <div id="passwordError" class="text-[8px] text-red-500 font-bold mt-1 uppercase hidden">Min 7 chars, 1 Mayus y 1 Núm</div>
+                    <p id="hintPass" class="hidden text-[8px] text-primary font-bold mt-1 uppercase">* Solo para cambiarla</p>
+                </div>
+
+                <button type="submit" class="w-full bg-primary text-white font-black py-3.5 rounded-xl mt-2 shadow-lg text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm" id="btnIcono">save</span>
+                    <span id="btnTexto">Guardar Usuario</span>
                 </button>
             </form>
         </div>
     </div>
 
+    <!-- MODAL ELIMINAR PERSONALIZADO -->
+    <div id="modalEliminar" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-white w-full max-w-xs rounded-[2rem] shadow-2xl p-8 text-center border border-slate-100">
+            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-3xl">delete_forever</span>
+            </div>
+            <h3 class="text-lg font-black text-slate-800 mb-2">¿Estás seguro?</h3>
+            <p class="text-xs text-slate-500 mb-6 leading-relaxed">Estás a punto de eliminar a <b id="nombreAEliminar" class="text-slate-900"></b>. Esta acción no tiene vuelta atrás.</p>
+            <div class="flex flex-col gap-2">
+                <a id="linkConfirmarEliminar" href="#" class="bg-red-500 text-white font-black py-3 rounded-xl text-[10px] uppercase tracking-widest hover:bg-red-600 transition-all">Sí, Eliminar Usuario</a>
+                <button onclick="cerrarModalEliminar()" class="text-slate-400 font-black py-3 text-[10px] uppercase tracking-widest hover:text-slate-600 transition-all">Mejor no, Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        function toggleModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.toggle('hidden');
-        }
+        const modal = document.getElementById('modalUsuario');
+        const modalDel = document.getElementById('modalEliminar');
+        const form = document.getElementById('formUsuario');
 
-        // Cerrar modal al hacer click fuera
-        window.onclick = function(event) {
-            const modal = document.getElementById('modalRegistro');
-            if (event.target == modal) {
-                modal.classList.add('hidden');
+        function validarSeguridad() {
+            const pass = document.getElementById('inputPassword').value;
+            const accion = document.getElementById('formAccion').value;
+            const errorDiv = document.getElementById('passwordError');
+
+            if(accion === 'editar' && pass === '') return true;
+
+            const regex = /^(?=.*[A-Z])(?=.*\d).{7,}$/;
+            if(!regex.test(pass)) {
+                errorDiv.classList.remove('hidden');
+                return false;
             }
+            errorDiv.classList.add('hidden');
+            return true;
         }
 
-        // Navegación activa
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentPath = window.location.pathname.split('/').pop() || 'usuarios.php';
-            document.querySelectorAll('aside nav a').forEach(link => {
-                if(link.getAttribute('href') === currentPath) {
-                    link.classList.add('bg-primary/10', 'text-primary', 'font-bold');
-                }
-            });
-        });
+        function abrirModalRegistro() {
+            form.reset();
+            document.getElementById('modalTitulo').innerText = "Nuevo Usuario";
+            document.getElementById('formAccion').value = "registrar";
+            document.getElementById('inputPassword').required = true;
+            document.getElementById('hintPass').classList.add('hidden');
+            document.getElementById('passwordError').classList.add('hidden');
+            modal.classList.remove('hidden');
+        }
+
+        function abrirModalEditar(u) {
+            document.getElementById('modalTitulo').innerText = "Editar Usuario";
+            document.getElementById('formAccion').value = "editar";
+            document.getElementById('usuarioId').value = u.id;
+            document.getElementById('inputNombre').value = u.nombre;
+            document.getElementById('inputUsername').value = u.username;
+            document.getElementById('inputCorreo').value = u.correo;
+            document.getElementById('inputRol').value = u.rol;
+            document.getElementById('inputPassword').required = false;
+            document.getElementById('hintPass').classList.remove('hidden');
+            document.getElementById('passwordError').classList.add('hidden');
+            modal.classList.remove('hidden');
+        }
+
+        function confirmarEliminar(id, nombre) {
+            document.getElementById('nombreAEliminar').innerText = nombre;
+            document.getElementById('linkConfirmarEliminar').href = `usuarios.php?confirmar_eliminar=${id}`;
+            modalDel.classList.remove('hidden');
+        }
+
+        function cerrarModal() { modal.classList.add('hidden'); }
+        function cerrarModalEliminar() { modalDel.classList.add('hidden'); }
     </script>
 </body>
 </html>
