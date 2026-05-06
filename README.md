@@ -1,10 +1,10 @@
-# 🚗 Park Control - Versión 2.0
+# 🚗 Park Control - Versión 1
 
 Sistema avanzado de gestión de parqueo desarrollado en PHP con funcionalidades mejoradas para el control integral de entradas, salidas, usuarios y reportes administrativos.
 
 ## 📋 Descripción
 
-Park Control v2.0 es una versión mejorada del sistema de gestión de estacionamientos, que incorpora nuevas funcionalidades como gestión avanzada de usuarios, sistema de perfiles personalizables, reportes detallados, y una interfaz de usuario más completa y profesional.
+Park Control v1 es una versión mejorada del sistema de gestión de estacionamientos, que incorpora nuevas funcionalidades como gestión avanzada de usuarios, sistema de perfiles personalizables, reportes detallados, y una interfaz de usuario más completa y profesional.
 
 ## 🚀 Características
 
@@ -78,7 +78,7 @@ PARK-CONTROL/
 ```bash
    git clone https://github.com/rodriguez999/Park-Controly.git
    cd park-control
-   git checkout v2.0
+   git checkout v1
 ```
 
 2. **Configurar la base de datos**
@@ -295,7 +295,7 @@ sudo systemctl restart apache2
 - Verificar permisos en `/tmp` o directorio de sesiones de PHP
 - Revisar configuración de `session.save_path` en php.ini
 
-## 📈 Novedades de la Versión 2.0
+## 📈 Novedades de la Versión 1
 
 ### ✨ Nuevas Características
 
