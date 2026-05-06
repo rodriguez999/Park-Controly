@@ -1,10 +1,10 @@
-# 🚗 Park Control - Versión 1.0
+# 🚗 Park Control - Versión 0
 
 Sistema de gestión de parqueo desarrollado en PHP para el control básico de entradas, salidas y administración de vehículos.
 
 ## 📋 Descripción
 
-Park Control v1.0 es la versión inicial de una aplicación web diseñada para facilitar la gestión de estacionamientos, permitiendo el registro de vehículos, control de entradas y salidas, generación de tickets básicos y gestión de usuarios.
+Park Control v0 es la versión inicial de una aplicación web diseñada para facilitar la gestión de estacionamientos, permitiendo el registro de vehículos, control de entradas y salidas, generación de tickets básicos y gestión de usuarios.
 
 ## 🚀 Características
 
@@ -189,7 +189,7 @@ Contiene funciones reutilizables como:
 - Verificar que mod_rewrite esté habilitado
 - Revisar configuración de Apache (AllowOverride All)
 
-## 📈 Próximas Mejoras (v2.0)
+## 📈 Próximas Mejoras (v1)
 
 - [ ] Sistema de reportes avanzados
 - [ ] Múltiples perfiles de usuario
