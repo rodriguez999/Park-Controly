@@ -72,7 +72,7 @@ PARK-CONTROL/
 
 1. **Clonar el repositorio**
 ```bash
-   git clone https://github.com/tu-usuario/park-control.git
+   git clone https://github.com/rodriguez999/Park-Controly.git
    cd park-control
 ```
 
